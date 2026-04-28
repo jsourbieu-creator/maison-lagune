@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suivi Chantier</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script id="D" type="application/json">{"title":"Suivi financier \u2014 Chantier maison","pret":299218.06,"sections":[{"name":"Terrain \u0026 frais de notaire","rows":[{"l":"Achat du terrain","n":"Acte notaire / compromis","b":44000,"p":44000},{"l":"Frais de notaire","n":"Acte notaire / compromis","b":2200,"p":2200}]},{"name":"Contrat Norelis","rows":[{"l":"Construction cl\u00e9 en main","n":"Carrelage Yosemite 60\u00d760, porte Bel\u2019m Langeais, plancher chauffant, niche TV, coffrage cuisine, poutre cuisine","b":205810.56,"p":154357.92}]},{"name":"Travaux r\u00e9serv\u00e9s","rows":[{"l":"Raccordements coffrets","n":"Gaines EDF/PTT, eau, eaux us\u00e9es, acc\u00e8s chantier 130m\u00b2","b":9244.07,"p":9244.07},{"l":"\u00c9tude g\u00e9otechnique G2AVP","n":"Document Norelis/Plans","b":1188,"p":1188},{"l":"Raccordement ENEDIS","n":"Document Norelis/Plans","b":426.24,"p":426.24},{"l":"Descentes EP + drainage (plus-value)","n":"Pas encore pay\u00e9","b":489.72,"p":0}]},{"name":"Frais annexes","rows":[{"l":"Ouverture concessionnaires EAU + PTT","n":"EAU 151\u00a0\u20ac + PTT 600\u00a0\u20ac","b":751,"p":751},{"l":"Taxe de raccordement TAE","n":"Document Mairie","b":1300,"p":1300},{"l":"Taxe d\u2019am\u00e9nagement","n":"Payable en 2\u00d7 sur 24 mois \u2014 pas encore pay\u00e9e","b":3600,"p":0}]},{"name":"Frais bancaires","rows":[{"l":"Frais de garantie (caution bancaire)","n":"CIC \u2014 pr\u00e9lev\u00e9 automatiquement","b":2782.39,"p":2782.39},{"l":"Frais de dossier bancaire","n":"CIC \u2014 pr\u00e9lev\u00e9 automatiquement","b":900,"p":900}]},{"name":"Factures \u00e9ligibles pr\u00eat bancaire","rows":[{"l":"Cuisine \u00e9quip\u00e9e + \u00e9lectrom\u00e9nager + buanderie","n":"Four, hotte, r\u00e9frig\u00e9rateur, lave-vaisselle","b":15700,"p":4500},{"l":"Parquet","n":"Pay\u00e9 int\u00e9gralement","b":1500,"p":1500},{"l":"Peintures","n":"Devis Descrettes \u2014 pas encore pay\u00e9es","b":6776.7,"p":0},{"l":"Portail","n":"Pas encore pay\u00e9","b":8699.6,"p":0}]}]}</script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F2F1EC;--sf:#FAFAF7;--sf2:#F5F4EE;
+  --ink:#1A1916;--ink2:#6B6A64;--ink3:#A8A79F;
+  --bd:rgba(0,0,0,.08);--bd2:rgba(0,0,0,.13);
+  --gn:#4A7C20;--gnb:#EBF4DC;
+  --am:#9A5F0A;--amb:#FDF0D8;
+  --rd:#B03030;--rdb:#FCEAEA;
+  --bl:#1A5EA0;--blb:#E4F0FB;
+  --r:10px;--rl:14px;
+}
+body{font-family:'Outfit',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5;min-height:100vh;padding-bottom:5rem}
+.topbar{background:var(--ink);color:#fff;padding:0 1.5rem;display:flex;align-items:center;gap:10px;height:54px;position:sticky;top:0;z-index:100;box-shadow:0 1px 0 rgba(255,255,255,.06)}
+.ttitle{flex:1;font-size:13px;font-weight:500;opacity:.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbtn{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:7px;font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.09);color:#fff;transition:background .12s;white-space:nowrap}
+.tbtn:hover{background:rgba(255,255,255,.17)}
+.tbtn.pr{background:#fff;color:var(--ink);border-color:#fff}
+.tbtn.pr:hover{background:#eee}
+.tbtn.sm{padding:5px 10px;font-size:12px}
+.page{max-width:960px;margin:0 auto;padding:1.5rem 1.25rem}
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:1rem}
+.kc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);padding:13px 15px}
+.kl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:5px}
+.kv{font-size:19px;font-weight:700;line-height:1}
+.ks{font-size:11px;color:var(--ink3);margin-top:3px}
+.kc.gn .kv{color:var(--gn)}.kc.am .kv{color:var(--am)}.kc.bl .kv{color:var(--bl)}.kc.rd .kv{color:var(--rd)}
+.prog-wrap{margin-bottom:1.5rem}
+.prog-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.prog-top .pl{font-size:13px;font-weight:500}
+.prog-top .pp{font-size:15px;font-weight:700;color:var(--gn)}
+.prog-bg{height:9px;background:rgba(0,0,0,.08);border-radius:5px;overflow:hidden;margin-bottom:5px}
+.prog-fill{height:100%;border-radius:5px;background:var(--gn);transition:width .6s cubic-bezier(.4,0,.2,1)}
+.prog-sub{font-size:11px;color:var(--ink3)}
+.pretrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 16px;background:var(--blb);border:1px solid rgba(26,94,160,.15);border-radius:var(--rl);margin-bottom:1.5rem}
+.pretrow label{font-size:13px;font-weight:600;color:var(--bl);white-space:nowrap}
+.pretrow input{border:none;background:transparent;font-family:inherit;font-size:16px;font-weight:700;color:var(--bl);width:160px;outline:none}
+.pretrow input:focus{outline:2px solid var(--bl);border-radius:4px;background:#fff;padding:1px 5px}
+.pdelta{font-size:12px;color:var(--bl);margin-left:auto;font-style:italic}
+.sec{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:.875rem;overflow:hidden}
+.shdr{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;user-select:none;background:var(--sf2);border-bottom:1px solid var(--bd)}
+.sarr{font-size:10px;color:var(--ink3);transition:transform .2s;flex-shrink:0;display:inline-block}
+.sarr.o{transform:rotate(90deg)}
+.sname{font-size:13px;font-weight:600;flex:1;min-width:0;border-radius:4px;line-height:1.4}
+.sname:focus{outline:2px solid var(--bl);padding:0 4px}
+.sbadge{font-size:11px;font-weight:500;padding:2px 9px;border-radius:20px;white-space:nowrap}
+.bok{background:var(--gnb);color:var(--gn)}.bpt{background:var(--amb);color:var(--am)}.bno{background:var(--rdb);color:var(--rd)}.bau{background:var(--sf2);color:var(--ink2)}
+.sdel{opacity:0;transition:opacity .12s;border:none;background:none;color:var(--ink3);font-size:14px;cursor:pointer;padding:4px 6px;border-radius:4px}
+.sdel:hover{background:var(--rdb);color:var(--rd)}
+.shdr:hover .sdel{opacity:1}
+.sbody.cl{display:none}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;min-width:500px}
+th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);padding:8px 14px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
+th.r{text-align:right}
+td{padding:7px 14px;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#F6F5EF}
+.lc{}
+.lt{display:block;font-size:13px;color:var(--ink);line-height:1.4;border-radius:3px}
+.lt:focus{outline:2px solid var(--bl);padding:0 3px}
+.ln{display:block;font-size:11px;color:var(--ink3);margin-top:2px;line-height:1.3;border-radius:3px;font-style:italic}
+.ln:focus{outline:1px solid rgba(26,94,160,.35);font-style:normal;padding:0 3px}
+.ln:empty::before{content:'Note…';color:#ccc;pointer-events:none}
+.ni{display:block;width:100%;text-align:right;border:1px solid transparent;border-radius:5px;padding:5px 6px;font-size:13px;font-family:inherit;background:transparent;color:var(--ink);transition:border-color .12s,background .12s}
+.ni:hover{border-color:var(--bd2);background:var(--bg)}
+.ni:focus{outline:none;border-color:var(--bl);background:#fff}
+.rc{text-align:right;font-size:13px;font-weight:500;padding:7px 14px;vertical-align:middle}
+.ok{color:var(--gn)}.pt{color:var(--am)}.no{color:var(--rd)}
+.totrow td,.totrow .rc{background:var(--sf2);font-size:12px;font-weight:600}
+.addbar{padding:8px 14px;border-top:1px solid var(--bd)}
+.db{opacity:0;transition:opacity .12s;border:none;background:none;color:var(--ink3);font-size:12px;cursor:pointer;padding:3px 6px;border-radius:4px}
+.db:hover{background:var(--rdb);color:var(--rd)}
+tr:hover .db{opacity:1}
+.gtbox{background:var(--sf);border:2px solid var(--bd2);border-radius:var(--rl);overflow:hidden;margin-bottom:.5rem}
+.gtbox table{min-width:0}
+.gtr td{font-size:14px;font-weight:700;padding:14px 16px;background:var(--ink);color:#fff}
+.gtr td.g{color:#7DC547}.gtr td.a{color:#F4B942}
+.gtnote{font-size:11px;padding:9px 16px;background:var(--sf2);color:var(--ink3);border-top:1px solid var(--bd)}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink);color:#fff;padding:10px 18px;border-radius:var(--r);font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.25)}
+.toast.on{opacity:1}
+@media(max-width:680px){
+  .kpi{grid-template-columns:repeat(2,1fr)}
+  .kv{font-size:17px}
+  .topbar{padding:0 1rem}
+  .pdelta{margin-left:0;width:100%}
+}
+@media(max-width:400px){.kc:last-child:nth-child(5){grid-column:1/-1}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="ttitle" id="ttitle">Suivi Chantier</div>
+  <button class="tbtn sm" onclick="addSec()">+ Section</button>
+  <button class="tbtn pr" onclick="dl()">⬇ Télécharger</button>
+</div>
+
+<div class="page">
+  <div class="kpi">
+    <div class="kc"><div class="kl">Budget total</div><div class="kv" id="kt">—</div></div>
+    <div class="kc gn"><div class="kl">Déjà réglé</div><div class="kv" id="kp">—</div></div>
+    <div class="kc am"><div class="kl">Reste à payer</div><div class="kv" id="kr">—</div></div>
+    <div class="kc bl"><div class="kl">Enveloppe prêt</div><div class="kv" id="ke">—</div></div>
+    <div class="kc rd"><div class="kl">Fonds propres</div><div class="kv" id="kf">—</div><div class="ks" id="kfs"></div></div>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-top"><span class="pl">Avancement global</span><span class="pp" id="pp">—</span></div>
+    <div class="prog-bg"><div class="prog-fill" id="pf" style="width:0%"></div></div>
+    <div class="prog-sub" id="ps">—</div>
+  </div>
+
+  <div class="pretrow">
+    <label for="pret">Enveloppe prêt :</label>
+    <input id="pret" type="number" step="0.01" oninput="calc()">
+    <span class="pdelta" id="pd"></span>
+  </div>
+
+  <div id="secs"></div>
+
+  <div class="gtbox">
+    <div class="tw"><table>
+      <thead><tr><th style="width:40%">Poste</th><th class="r" style="width:20%">Budget</th><th class="r" style="width:20%">Payé</th><th class="r" style="width:20%">Reste</th></tr></thead>
+      <tbody><tr class="gtr">
+        <td>TOTAL GÉNÉRAL</td>
+        <td class="r" id="gb">—</td>
+        <td class="r g" id="gp">—</td>
+        <td class="r a" id="gr">—</td>
+      </tr></tbody>
+    </table></div>
+    <div class="gtnote" id="gn"></div>
+  </div>
+
+  <p style="font-size:11px;color:var(--ink3);margin-top:8px">Cliquez sur n'importe quel libellé ou montant pour modifier · Sauvegarde auto dans le navigateur</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='ch4';
+let D=JSON.parse(document.getElementById('D').textContent);
+try{const s=localStorage.getItem(KEY);if(s)D=JSON.parse(s);}catch(e){}
+
+const fr2=n=>new Intl.NumberFormat('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n)+'\u202f\u20ac';
+const fr0=n=>new Intl.NumberFormat('fr-FR').format(Math.round(Math.abs(n)))+'\u202f\u20ac';
+const $=(id)=>document.getElementById(id);
+const txt=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
+
+function calc(){
+  let tB=0,tP=0;
+  D.sections.forEach((s,si)=>{
+    let sB=0,sP=0;
+    s.rows.forEach((r,ri)=>{
+      const bi=$('b_'+si+'_'+ri), pi=$('p_'+si+'_'+ri);
+      const b=bi?+bi.value||0:r.b, p=pi?+pi.value||0:r.p;
+      r.b=b;r.p=p;
+      const re=b-p; sB+=b;sP+=p;
+      const rc=$('r_'+si+'_'+ri);
+      if(rc){rc.textContent=fr2(re);rc.className='rc '+(re<=0?'ok':p>0?'pt':'no');}
+    });
+    tB+=sB;tP+=sP;
+    const sR=sB-sP;
+    txt('sb_'+si,fr2(sB));txt('sp_'+si,fr2(sP));
+    const sr=$('sr_'+si);
+    if(sr){sr.textContent=fr2(sR);sr.className='rc '+(sR<=0?'ok':sP>0?'pt':'no');}
+    const bi=$('bi_'+si);
+    if(bi){bi.textContent=sR<=0?'Sold\u00e9':sP>0?'Reste '+fr0(sR):'Non pay\u00e9';bi.className='sbadge '+(sR<=0?'bok':sP>0?'bpt':'bno');}
+  });
+  const tR=tB-tP,pret=+$('pret').value||0,prop=tB-pret,pct=tB>0?tP/tB*100:0;
+  txt('kt',fr0(tB));txt('kp',fr0(tP));txt('kr',fr0(tR));txt('ke',fr0(pret));
+  txt('kf',fr0(Math.abs(prop)));txt('kfs',prop>0?'hors pr\u00eat':'pr\u00eat exc\u00e9dentaire');
+  txt('pp',pct.toFixed(1)+'\u202f%');
+  const pf=$('pf');if(pf)pf.style.width=Math.min(pct,100)+'%';
+  txt('ps',fr0(tP)+' r\u00e9gl\u00e9s sur '+fr0(tB));
+  txt('pd',prop>0?'\u26a0 d\u00e9passement de '+fr0(prop)+' sur fonds propres':'\u2713 pr\u00eat suffisant (exc\u00e9dent '+fr0(Math.abs(prop))+')');
+  txt('gb',fr2(tB));txt('gp',fr2(tP));txt('gr',fr2(tR));
+  txt('gn','Enveloppe pr\u00eat\u202f: '+fr0(pret)+(prop>0?' \u00b7 Fonds propres\u202f: '+fr0(prop):''));
+  D.pret=pret;save();
+}
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify(D));}catch(e){}}
+
+function render(){
+  $('ttitle').textContent=D.title;
+  $('pret').value=D.pret;
+  const c=$('secs');c.innerHTML='';
+  D.sections.forEach((s,si)=>c.appendChild(buildSec(s,si)));
+  calc();
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function buildSec(s,si){
+  const d=document.createElement('div');
+  d.className='sec';d.id='S'+si;
+  d.innerHTML=`<div class="shdr" onclick="tog(${si})">
+  <span class="sarr o" id="ar${si}">&#9658;</span>
+  <span class="sname" contenteditable="true" spellcheck="false" onclick="event.stopPropagation()"
+    onblur="D.sections[${si}].name=this.textContent.trim();save()">${esc(s.name)}</span>
+  <span class="sbadge bau" id="bi_${si}"></span>
+  <button class="sdel" onclick="event.stopPropagation();delSec(${si})" title="Supprimer">&#10005;</button>
+</div>
+<div class="sbody" id="bd${si}">
+  <div class="tw"><table>
+    <thead><tr>
+      <th style="width:42%">Poste</th>
+      <th class="r" style="width:18%">Budget</th>
+      <th class="r" style="width:18%">Pay\u00e9</th>
+      <th class="r" style="width:16%">Reste</th>
+      <th style="width:6%"></th>
+    </tr></thead>
+    <tbody id="tb${si}">${s.rows.map((r,ri)=>mkRow(si,ri,r)).join('')}</tbody>
+    <tfoot><tr class="totrow">
+      <td>Sous-total</td>
+      <td class="r" id="sb_${si}">—</td>
+      <td class="r" id="sp_${si}">—</td>
+      <td class="rc" id="sr_${si}">—</td>
+      <td></td>
+    </tr></tfoot>
+  </table></div>
+  <div class="addbar"><button class="tbtn sm" style="border-color:rgba(0,0,0,.12);color:var(--ink2)" onclick="addRow(${si})">+ Ligne</button></div>
+</div>`;
+  return d;
+}
+
+function mkRow(si,ri,r){
+  return `<tr id="R${si}_${ri}">
+<td class="lc">
+  <span class="lt" contenteditable="true" spellcheck="false"
+    onblur="D.sections[${si}].rows[${ri}].l=this.textContent;save()">${esc(r.l)}</span>
+  <span class="ln" contenteditable="true" spellcheck="false"
+    onblur="D.sections[${si}].rows[${ri}].n=this.textContent;save()">${esc(r.n)}</span>
+</td>
+<td><input class="ni" id="b_${si}_${ri}" type="number" step="0.01" min="0" value="${r.b}" oninput="calc()"></td>
+<td><input class="ni" id="p_${si}_${ri}" type="number" step="0.01" min="0" value="${r.p}" oninput="calc()"></td>
+<td class="rc no" id="r_${si}_${ri}">—</td>
+<td style="text-align:center"><button class="db" onclick="delRow(${si},${ri})">&#10005;</button></td>
+</tr>`;
+}
+
+function tog(si){$('bd'+si).classList.toggle('cl');$('ar'+si).classList.toggle('o');}
+function addRow(si){D.sections[si].rows.push({l:'Nouveau poste',n:'',b:0,p:0});render();}
+function delRow(si,ri){if(D.sections[si].rows.length<2){toast('1 ligne minimum.');return;}D.sections[si].rows.splice(ri,1);render();}
+function addSec(){D.sections.push({name:'Nouvelle section',rows:[{l:'Nouveau poste',n:'',b:0,p:0}]});render();}
+function delSec(si){if(!confirm('Supprimer "'+D.sections[si].name+'" ?'))return;D.sections.splice(si,1);render();}
+
+function dl(){
+  // sync all editable content
+  D.sections.forEach((s,si)=>{
+    const sn=document.querySelector('#S'+si+' .sname');
+    if(sn)s.name=sn.textContent.trim();
+    s.rows.forEach((r,ri)=>{
+      const lt=document.querySelector('#R'+si+'_'+ri+' .lt');
+      const ln=document.querySelector('#R'+si+'_'+ri+' .ln');
+      const bi=$('b_'+si+'_'+ri), pi=$('p_'+si+'_'+ri);
+      if(lt)r.l=lt.textContent;
+      if(ln)r.n=ln.textContent;
+      if(bi)r.b=+bi.value||0;
+      if(pi)r.p=+pi.value||0;
+    });
+  });
+  D.pret=+$('pret').value||0;
+
+  const tag=$('D'), orig=tag.textContent;
+  tag.textContent=JSON.stringify(D);
+  const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  tag.textContent=orig;
+
+  try{
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='suivi-chantier.html';
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+    toast('Fichier t\u00e9l\u00e9charg\u00e9 \u2713');
+  }catch(e){toast('Erreur : '+e.message);}
+}
+
+function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),2800);}
+
+render();
+</script>
+</body>
+</html>
