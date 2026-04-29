@@ -164,6 +164,7 @@ tbody tr:active{background:var(--s2);}
 .ni:hover{border-color:var(--bd2);background:var(--s2);}
 .ni:focus{outline:none;border-color:var(--blue);background:var(--white);}
 .ni.ni-mv{color:var(--green) !important;font-weight:600 !important;}
+.ni::placeholder{color:var(--ink3);font-weight:400;}
 .rc{font-size:13px;font-weight:600;text-align:right;padding:11px 14px;vertical-align:middle;white-space:nowrap;}
 .ok{color:var(--green)}.pt{color:var(--orange)}.no{color:var(--red)}
 .totrow td,.totrow .rc{background:var(--s2);font-weight:600;border-top:.5px solid var(--bd2) !important;border-bottom:none !important;padding:11px 14px;vertical-align:middle;}
@@ -178,6 +179,7 @@ tbody tr:active{background:var(--s2);}
 .btn-add:active{transform:scale(.98);opacity:.8;}
 .btn-add-mv{background:var(--gnbg);color:var(--green);font-weight:600;}
 .row-mv td{background:#F6FCF0 !important;}
+.row-mv .mv-hint{display:block;font-size:9px;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;}
 .mv-badge{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;background:var(--gnbg);color:var(--green);margin-left:6px;vertical-align:middle;text-transform:uppercase;letter-spacing:.04em;}
 
 /* ── Analyse ── */
@@ -683,7 +685,7 @@ function buildSec(s,si){
   const isEnv=s.type==='enveloppe';
   const rows=s.rows.map((r,ri)=>{
     const isMV=r.b<0;
-    return `<tr id="R${si}_${ri}" class="swipe-row${isMV?' row-mv':''}" data-si="${si}" data-ri="${ri}">
+    return `<tr id="R${si}_${ri}" class="swipe-row${isMV?' row-mv':''}" data-si="${si}" data-ri="${ri}"${isMV?' data-mv="1"':''}>
 <td><span class="lt" contenteditable="true" spellcheck="false" onblur="D.sections[${si}].rows[${ri}].l=this.textContent;save()">${esc(r.l)}</span>${isMV?'<span class="mv-badge">Moins-value</span>':''}<span class="ln" contenteditable="true" spellcheck="false" onblur="D.sections[${si}].rows[${ri}].n=this.textContent;save()">${esc(r.n)}</span></td>
 <td class="col-budget"><input class="ni${isMV?' ni-mv':''}" id="b_${si}_${ri}" type="number" step="0.01" inputmode="decimal" value="${r.b}" oninput="onBI(this,${si},${ri})"></td>
 <td><input class="ni" id="p_${si}_${ri}" type="number" step="0.01" min="0" inputmode="decimal" value="${r.p}" oninput="calc()"${isMV?' disabled style="opacity:.3;pointer-events:none"':''}></td>
@@ -721,17 +723,32 @@ function buildSec(s,si){
 }
 
 function onBI(el,si,ri){
-  const v=+el.value||0,isMV=v<0;
+  let v=+el.value||0;
+  // If this row was created as mv, always force negative
+  const row=$('R'+si+'_'+ri);
+  const isMVrow=row&&row.dataset.mv==='1';
+  if(isMVrow && v>0){ v=-v; el.value=v; }
+  const isMV=v<0;
   el.className='ni'+(isMV?' ni-mv':'');
   const pi=$('p_'+si+'_'+ri);
   if(pi){pi.disabled=isMV;pi.style.opacity=isMV?'.3':'1';if(isMV)pi.value=0;}
-  const row=$('R'+si+'_'+ri);
   if(row){row.classList.toggle('row-mv',isMV);let b=row.querySelector('.mv-badge');if(isMV&&!b){const lt=row.querySelector('.lt');b=document.createElement('span');b.className='mv-badge';b.textContent='Moins-value';lt.after(b);}if(!isMV&&b)b.remove();}
   calc();
 }
 function tog(si){$('bd'+si).classList.toggle('cl');$('ar'+si).classList.toggle('o');}
 function toggleType(si){D.sections[si].type=D.sections[si].type==='enveloppe'?'base':'enveloppe';save();render();}
-function addRow(si,mv){D.sections[si].rows.push(mv?{l:'Moins-value',n:'',b:0,p:0,mv:true}:{l:'Nouveau poste',n:'',b:0,p:0});render();setTimeout(()=>{const ri=D.sections[si].rows.length-1;const bi=$('b_'+si+'_'+ri);if(bi)bi.focus();},80);}
+function addRow(si,mv){
+  D.sections[si].rows.push(mv?{l:'Moins-value',n:'',b:-1,p:0,mv:true}:{l:'Nouveau poste',n:'',b:0,p:0});
+  render();
+  setTimeout(()=>{
+    const ri=D.sections[si].rows.length-1;
+    const bi=$('b_'+si+'_'+ri);
+    if(bi){
+      if(mv){ bi.value=''; bi.placeholder='ex: 1000'; }
+      bi.focus(); bi.select&&bi.select();
+    }
+  },80);
+}
 function delRow(si,ri){if(D.sections[si].rows.length<2){toast('Au moins 1 ligne requise.');return;}D.sections[si].rows.splice(ri,1);render();}
 function addSec(){D.sections.push({name:'Nouvelle section',type:'enveloppe',rows:[{l:'Nouveau poste',n:'',b:0,p:0}]});render();}
 function delSec(si){if(!confirm('Supprimer "'+D.sections[si].name+'" ?'))return;D.sections.splice(si,1);render();}
