@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#F5F4F0">
 <title>40 Chemin de la Lagune</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
-
+ 
 <script id="D" type="application/json">{
   "pret": 299218.06,
   "sections": [
@@ -42,7 +42,7 @@
     ]}
   ]
 }</script>
-
+ 
 <style>
 @media(prefers-color-scheme:dark){html,body{background:#F5F4F0 !important;color:#1C1B18 !important;}nav{background:#EDECEA !important;}.kc,.sec,.recap-box,.analyse-box,.save-bar{background:#FFFFFF !important;}.shdr,.addbar,.totrow td{background:#F5F4F0 !important;}input,.ni{color:#1C1B18 !important;}.ni:focus{background:#fff !important;}}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -123,7 +123,7 @@ tbody tr:last-child td{border-bottom:none;}
 .tl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);}
 .db{border:none;background:none;color:var(--ink3);font-size:13px;cursor:pointer;padding:4px 6px;border-radius:5px;min-width:30px;min-height:30px;display:flex;align-items:center;justify-content:center;transition:opacity .1s,background .1s;}
 @media(hover:hover){.db{opacity:0;}tr:hover .db{opacity:1;}}
-@media(hover:none){.db{opacity:1;background:#FFE8E8;color:#C0392B;border-radius:8px;}}
+@media(hover:none){.db{opacity:1;background:#FFE8E8;color:#C0392B;border-radius:8px;min-width:36px;min-height:36px;}}
 .db:hover,.db:active{background:var(--rdbg);color:var(--red);opacity:1;}
 .row-mv td{background:#F6FCF0 !important;}
 .mv-badge{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;background:var(--gnbg);color:var(--green);margin-left:6px;vertical-align:middle;text-transform:uppercase;letter-spacing:.04em;}
@@ -200,13 +200,12 @@ tbody tr:last-child td{border-bottom:none;}
 </style>
 </head>
 <body>
-
+ 
 <nav>
-  <div class="sync-dot" id="sync-dot"></div>
   <div class="nav-title">40 Chemin de la Lagune &middot; Saint-Philbert-des-Champs</div>
   <button class="btn btn-light" onclick="addSec()" style="font-size:12px;padding:6px 12px;flex-shrink:0">+ Section</button>
 </nav>
-
+ 
 <div class="page">
   <div class="kpi">
     <div class="kc wide"><div class="kl">Budget total du projet</div><div class="kv" id="kt">—</div></div>
@@ -297,32 +296,33 @@ tbody tr:last-child td{border-bottom:none;}
     </div>
   </div>
   <div class="save-bar">
-    <div class="save-bar-title">Synchronisation en temps réel</div>
+    <div class="save-bar-title">Sauvegarde & partage</div>
     <div class="save-bar-row">
-      <button class="sbtn sbtn-save" onclick="forceSave()">☁️ Sauvegarder</button>
+      <button class="sbtn sbtn-save" onclick="forceSave()">💾 Sauvegarder</button>
+      <button class="sbtn" style="background:var(--purplebg);color:var(--purple)" onclick="shareLink()">🔗 Envoyer à Agathe</button>
       <button class="sbtn sbtn-dl" onclick="dl()">⬇ Télécharger</button>
     </div>
-    <div class="save-status" id="save-status">Connexion...</div>
+    <div class="save-status" id="save-status">Prêt</div>
   </div>
-  <p class="hint">Modifications sauvegardées automatiquement et partagées avec Agathe en temps réel</p>
+  <p class="hint">Sauvegarde automatique sur cet appareil · Cliquez "Envoyer à Agathe" pour partager vos modifications</p>
 </div>
-
+ 
 <div class="toast" id="toast" style="position:fixed;bottom:calc(1.25rem + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(8px);background:var(--ink);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.18);white-space:nowrap;"></div>
-
+ 
 <script>
 // ── Données initiales (toujours disponibles offline) ──
 let D = (function(){
   try { return JSON.parse(document.getElementById('D').textContent); }
   catch(e) { return {pret:299218.06,sections:[]}; }
 })();
-
+ 
 // ── Firebase REST API ──
 const FB_URL = 'https://maison-lagune-budget-default-rtdb.firebaseio.com/chantier.json';
 let _saveTimer = null;
 let _lastHash = '';
 let _fromRemote = false;
 let _ready = false;
-
+ 
 const CIRC = 251.2;
 const fr2 = n => new Intl.NumberFormat('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n)+'\u202f\u20ac';
 const fr0 = n => new Intl.NumberFormat('fr-FR').format(Math.round(Math.abs(n)))+'\u202f\u20ac';
@@ -331,22 +331,23 @@ const $ = id => document.getElementById(id);
 const txt = (id,v) => { const e=$(id); if(e) e.textContent=v; };
 const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const dataHash = d => { try{return JSON.stringify(d);}catch(e){return '';} };
-
-function fbRead(){ return fetch(FB_URL).then(r=>r.json()).catch(()=>null); }
-function fbWrite(d){ return fetch(FB_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)}).then(r=>r.json()).catch(e=>{throw e;}); }
-
+ 
+const FB_ENABLED = location.protocol !== 'file:';
+function fbRead(){ if(!FB_ENABLED) return Promise.resolve(null); return fetch(FB_URL).then(r=>r.json()).catch(()=>null); }
+function fbWrite(d){ if(!FB_ENABLED){ localStorage.setItem(LS_KEY,JSON.stringify(d)); return Promise.resolve(d); } return fetch(FB_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)}).then(r=>r.json()).catch(e=>{throw e;}); }
+ 
 function setSyncStatus(s,m){
   const dot=$('sync-dot'); if(dot)dot.className='sync-dot '+s;
   txt('save-status',m);
 }
-
+ 
 function scheduleSave(){
   if(!_ready) return;
   clearTimeout(_saveTimer);
   setSyncStatus('syncing','Synchronisation...');
   _saveTimer = setTimeout(doSave, 1500);
 }
-
+ 
 function doSave(){
   if(!_ready) return;
   syncAll();
@@ -359,9 +360,9 @@ function doSave(){
     console.error(e);
   });
 }
-
+ 
 function forceSave(){ _ready=true; syncAll(); doSave(); toast('Enregistré ✓'); }
-
+ 
 function startPolling(){
   setInterval(()=>{
     if(_saveTimer) return;
@@ -377,12 +378,12 @@ function startPolling(){
     }).catch(()=>setSyncStatus('error','Hors ligne'));
   }, 5000);
 }
-
+ 
 function setDash(id,p){const el=$(id);if(!el)return;const v=Math.max(0,Math.min(1,p))*CIRC;el.setAttribute('stroke-dasharray',v+' '+CIRC);}
 function setDash2(id,p,off){const el=$(id);if(!el)return;const v=Math.max(0,Math.min(1,p))*CIRC;el.setAttribute('stroke-dasharray',v+' '+CIRC);el.setAttribute('stroke-dashoffset',-off*CIRC);}
 function setW(id,w){const e=$(id);if(e)e.style.width=Math.max(0,w).toFixed(1)+'%';}
 function setL(id,l){const e=$(id);if(e)e.style.left=Math.max(0,l).toFixed(1)+'%';}
-
+ 
 function calc(){
   let tB=0,tP=0,baseB=0,envB=0,norelisR=0;
   D.sections.forEach((s,si)=>{
@@ -437,7 +438,7 @@ function calc(){
   D.pret=pret;
   if(!_fromRemote) scheduleSave();
 }
-
+ 
 function syncAll(){
   D.sections.forEach((s,si)=>{
     const sn=document.querySelector('#S'+si+' .sname');if(sn)s.name=sn.textContent.trim();
@@ -450,7 +451,7 @@ function syncAll(){
   });
   D.pret=+$('pret').value||0;
 }
-
+ 
 function render(){
   $('pret').value=D.pret;
   const c=$('secs');c.innerHTML='';
@@ -458,7 +459,7 @@ function render(){
   calc();
   setTimeout(initSwipe,60);
 }
-
+ 
 function buildSec(s,si){
   const d=document.createElement('div');
   d.className='sec type-'+(s.type||'base');d.id='S'+si;
@@ -494,7 +495,7 @@ function buildSec(s,si){
 </div>`;
   return d;
 }
-
+ 
 function onBI(el,si,ri){
   let v=+el.value||0;
   const row=$('R'+si+'_'+ri);
@@ -506,14 +507,14 @@ function onBI(el,si,ri){
   if(row){row.classList.toggle('row-mv',isMV);let b=row.querySelector('.mv-badge');if(isMV&&!b){const lt=row.querySelector('.lt');b=document.createElement('span');b.className='mv-badge';b.textContent='Moins-value';lt.after(b);}if(!isMV&&b)b.remove();}
   calc();
 }
-
+ 
 function tog(si){$('bd'+si).classList.toggle('cl');$('ar'+si).classList.toggle('o');}
 function toggleType(si){syncAll();D.sections[si].type=D.sections[si].type==='enveloppe'?'base':'enveloppe';render();scheduleSave();}
 function addRow(si,mv){syncAll();D.sections[si].rows.push(mv?{l:'Moins-value',n:'',b:-1,p:0,mv:true}:{l:'Nouveau poste',n:'',b:0,p:0});render();setTimeout(()=>{const ri=D.sections[si].rows.length-1;const bi=$('b_'+si+'_'+ri);if(bi){if(mv)bi.value='';bi.focus();bi.select&&bi.select();}},80);}
 function delRow(si,ri){if(D.sections[si].rows.length<2){toast('Au moins 1 ligne requise.');return;}syncAll();D.sections[si].rows.splice(ri,1);render();scheduleSave();}
 function addSec(){syncAll();D.sections.push({name:'Nouvelle section',type:'enveloppe',rows:[{l:'Nouveau poste',n:'',b:0,p:0}]});render();scheduleSave();}
 function delSec(si){if(!confirm('Supprimer "'+D.sections[si].name+'" ?'))return;syncAll();D.sections.splice(si,1);render();scheduleSave();}
-
+ 
 function dl(){
   syncAll();
   const tag=$('D'),orig=tag.textContent;
@@ -522,47 +523,122 @@ function dl(){
   tag.textContent=orig;
   try{const blob=new Blob([html],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='index.html';document.body.appendChild(a);a.click();setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);toast('Téléchargé ✓');}catch(e){toast('Erreur : '+e.message);}
 }
-
+ 
 function toast(msg){const el=$('toast');el.textContent=msg;el.style.opacity='1';el.style.transform='translateX(-50%) translateY(0)';setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(-50%) translateY(8px)';},2800);}
-
+ 
+function closeAllSwipes(except){
+  document.querySelectorAll('tr[data-si].swiped').forEach(r=>{
+    if(r===except)return;
+    r.classList.remove('swiped');
+    r.querySelectorAll('td').forEach(t=>t.style.transform='');
+    const o=r.querySelector('.swipe-action');
+    if(o){o.style.opacity='0';o.style.pointerEvents='none';}
+  });
+}
+ 
 function initSwipe(){
   document.querySelectorAll('tr[data-si]').forEach(row=>{
     if(row._swipeInit)return;row._swipeInit=true;
-    let sx=0,sy=0,dx=0;
+    let sx=0,sy=0,dx=0,swiped=false;
     let ov=row.querySelector('.swipe-action');
-    if(!ov){ov=document.createElement('div');ov.style.cssText='position:absolute;right:0;top:0;height:100%;display:flex;align-items:center;justify-content:center;background:#E02020;color:#fff;font-size:13px;font-weight:600;padding:0 18px;opacity:0;pointer-events:none;min-width:80px;transition:opacity .15s;';ov.textContent='Supprimer';ov.addEventListener('click',e=>{e.stopPropagation();delRow(+row.dataset.si,+row.dataset.ri);});row.style.position='relative';row.style.overflow='hidden';row.appendChild(ov);}
-    row.addEventListener('touchstart',e=>{document.querySelectorAll('tr[data-si].swiped').forEach(r=>{if(r!==row){r.classList.remove('swiped');r.querySelectorAll('td').forEach(t=>t.style.transform='');const o=r.querySelector('.swipe-action');if(o)o.style.opacity='0';}});sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;},{passive:true});
-    row.addEventListener('touchmove',e=>{dx=e.touches[0].clientX-sx;const dy=Math.abs(e.touches[0].clientY-sy);if(Math.abs(dx)>dy&&Math.abs(dx)>8){const sh=Math.max(-90,Math.min(0,dx));row.querySelectorAll('td').forEach(t=>t.style.transform=`translateX(${sh}px)`);ov.style.opacity=dx<-40?'1':'0';if(dx<-40)row.classList.add('swiped');else row.classList.remove('swiped');}},{passive:true});
-    row.addEventListener('touchend',()=>{if(dx>-40){row.querySelectorAll('td').forEach(t=>t.style.transform='');ov.style.opacity='0';row.classList.remove('swiped');}else{row.querySelectorAll('td').forEach(t=>t.style.transform='translateX(-90px)');ov.style.opacity='1';row.classList.add('swiped');}},{passive:true});
+    if(!ov){
+      ov=document.createElement('div');
+      ov.className='swipe-action';
+      ov.style.cssText='position:absolute;right:0;top:0;height:100%;display:flex;align-items:center;justify-content:center;background:#E02020;color:#fff;font-size:13px;font-weight:600;padding:0 22px;opacity:0;pointer-events:none;min-width:88px;z-index:2;';
+      ov.textContent='Supprimer';
+      ov.addEventListener('touchend',e=>{e.stopPropagation();e.preventDefault();delRow(+row.dataset.si,+row.dataset.ri);},{passive:false});
+      row.style.position='relative';row.style.overflow='hidden';
+      row.appendChild(ov);
+    }
+    row.addEventListener('touchstart',e=>{
+      closeAllSwipes(row);
+      sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;swiped=false;
+    },{passive:true});
+    row.addEventListener('touchmove',e=>{
+      dx=e.touches[0].clientX-sx;
+      const dy=Math.abs(e.touches[0].clientY-sy);
+      if(Math.abs(dx)>dy&&Math.abs(dx)>8){
+        const sh=Math.max(-88,Math.min(0,dx));
+        row.querySelectorAll('td').forEach(t=>t.style.transform=`translateX(${sh}px)`);
+        const show=dx<-30;
+        ov.style.opacity=show?'1':'0';
+        ov.style.pointerEvents=show?'auto':'none';
+        swiped=dx<-44;
+        row.classList.toggle('swiped',swiped);
+      }
+    },{passive:true});
+    row.addEventListener('touchend',()=>{
+      if(!swiped){
+        row.querySelectorAll('td').forEach(t=>t.style.transform='');
+        ov.style.opacity='0';ov.style.pointerEvents='none';
+        row.classList.remove('swiped');
+      } else {
+        row.querySelectorAll('td').forEach(t=>t.style.transform='translateX(-88px)');
+        ov.style.opacity='1';ov.style.pointerEvents='auto';
+        row.classList.add('swiped');
+      }
+    },{passive:true});
   });
 }
-document.addEventListener('touchstart',e=>{if(!e.target.closest('tr[data-si]'))document.querySelectorAll('tr[data-si].swiped').forEach(r=>{r.classList.remove('swiped');r.querySelectorAll('td').forEach(t=>t.style.transform='');const o=r.querySelector('.swipe-action');if(o)o.style.opacity='0';});},{passive:true});
-
+document.addEventListener('touchstart',e=>{if(!e.target.closest('tr[data-si]'))closeAllSwipes(null);},{passive:true});
+ 
+// ── Partage par lien (hash) ──
+const LS_KEY = 'chantier_lagune_v1';
+ 
+function shareLink(){
+  syncAll();
+  try{
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(D))));
+    const url = location.origin + location.pathname + '#data=' + encoded;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(()=>toast('Lien copié ✓ — colle-le à Agathe')).catch(()=>prompt('Copie ce lien :', url));
+    } else { prompt('Copie ce lien :', url); }
+  }catch(e){ toast('Erreur : '+e.message); }
+}
+ 
+function loadFromHash(){
+  try{
+    const h = location.hash;
+    if(!h.startsWith('#data=')) return false;
+    const json = decodeURIComponent(escape(atob(h.slice(6))));
+    const parsed = JSON.parse(json);
+    if(parsed && parsed.sections && parsed.sections.length > 0){ D = parsed; return true; }
+  }catch(e){}
+  return false;
+}
+ 
 // ── INIT ──
-// 1. Affiche immédiatement avec les données locales
-render();
-setSyncStatus('syncing','Connexion...');
-
-// 2. Charge Firebase en arrière-plan
-fbRead().then(data=>{
+// 1. Essaie Firebase en priorité
+setSyncStatus('syncing', 'Chargement…');
+fbRead().then(data => {
   if(data && data.sections && data.sections.length > 0){
-    // Firebase a des données valides → on les affiche
     D = data;
     _lastHash = dataHash(D);
-    _ready = true;
-    render();
-    setSyncStatus('online','Connecté');
+    setSyncStatus('online', 'Connecté');
   } else {
-    // Firebase vide → on sauvegarde les données locales
-    _ready = true;
-    _lastHash = dataHash(D);
-    doSave();
+    // Pas de données Firebase → essaie hash puis localStorage
+    if(!loadFromHash()){
+      try{
+        const saved = localStorage.getItem(LS_KEY);
+        if(saved){ const p=JSON.parse(saved); if(p&&p.sections&&p.sections.length>0) D=p; }
+      }catch(e){}
+    }
+    setSyncStatus('online', 'Prêt');
   }
-  startPolling();
-}).catch(()=>{
   _ready = true;
-  setSyncStatus('error','Hors ligne');
+  render();
   startPolling();
+}).catch(() => {
+  // Hors ligne → hash ou localStorage
+  setSyncStatus('error', 'Hors ligne');
+  if(!loadFromHash()){
+    try{
+      const saved = localStorage.getItem(LS_KEY);
+      if(saved){ const p=JSON.parse(saved); if(p&&p.sections&&p.sections.length>0) D=p; }
+    }catch(e){}
+  }
+  _ready = true;
+  render();
 });
 </script>
 </body>
