@@ -270,33 +270,63 @@ tbody tr:active{background:var(--s2);}
 .hint{font-size:11px;color:var(--ink3);text-align:center;padding:8px 0 16px;}
 
 /* Responsive */
-@media(max-width:580px){
-  .col-budget{display:none;}
+/* ── 640px : tablette portrait ── */
+@media(max-width:640px){
+  /* Nav : titre court */
+  .nav-title{font-size:13px;}
+  .nav-title small{display:none;}
+  /* KPI 2 colonnes */
   .kpi{grid-template-columns:1fr 1fr;}
-  .recap-grid{grid-template-columns:1fr 1fr;}
+  /* Donuts empilés */
   .charts-row{grid-template-columns:1fr;}
   .chart-card:first-child{border-right:none;border-bottom:.5px solid var(--bd);}
+  /* Barre prêt : légende 1 colonne */
   .pa-rows{grid-template-columns:1fr;}
+  /* Résumé 4 cases : 2×2 */
   .final-grid{grid-template-columns:1fr 1fr;}
   .final-item:nth-child(2){border-right:none;}
   .final-item:nth-child(3){border-top:.5px solid var(--bd);}
   .final-item:nth-child(4){border-top:.5px solid var(--bd);border-right:none;}
   .fv{font-size:16px;}
+  /* Matelas banner */
   .matelas-banner{flex-direction:column;align-items:flex-start;gap:8px;}
   .mb-val{font-size:20px;}
+  /* Recap grid */
+  .recap-grid{grid-template-columns:1fr 1fr;}
+  /* Save bar : boutons pleine largeur */
+  .save-bar-row{flex-direction:column;}
+  .save-bar-row .sbtn{min-width:unset;width:100%;}
 }
-@media(max-width:380px){
+
+/* ── 580px : masque colonne budget dans les tableaux ── */
+@media(max-width:580px){
+  .col-budget{display:none;}
+}
+
+/* ── 420px : très petit écran ── */
+@media(max-width:420px){
+  .nav-title{font-size:12px;}
   .spill{display:none;}
   .stype-btn{font-size:9px;padding:3px 7px;}
+  .kv{font-size:15px;}
+  .kc.wide .kv{font-size:18px;}
+  .rv{font-size:15px;}
+  .rhv{font-size:18px;}
+  .shdr{padding:12px;}
+  .chart-inner{flex-direction:column;align-items:flex-start;}
+  .donut-wrap{width:70px;height:70px;}
+  .donut-wrap svg{width:70px;height:70px;}
+  .donut-pct{font-size:15px;}
+  .fv{font-size:14px;}
+  .final-item{padding:12px;}
 }
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-title">Suivi chantier</div>
+  <div class="nav-title">40 Chemin de la Lagune <small>· Saint-Philbert-des-Champs</small></div>
   <button class="btn btn-light" onclick="addSec()" style="font-size:12px;padding:6px 12px">+ Section</button>
-  <button class="btn btn-dark" onclick="dl()" style="font-size:12px;padding:6px 12px">⬇ Enregistrer</button>
 </nav>
 
 <div class="page">
