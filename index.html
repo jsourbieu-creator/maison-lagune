@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -239,6 +240,30 @@ tbody tr:active{background:var(--s2);}
 .sbtn-dl{background:var(--s3);color:var(--ink2);}
 .save-status{font-size:11px;color:var(--ink3);margin-top:10px;text-align:center;font-style:italic;}
 
+
+/* ── Swipe to delete ── */
+.swipe-row{position:relative;overflow:hidden;}
+.swipe-inner{display:contents;}
+.swipe-row td{transition:transform .2s ease;}
+.swipe-action{
+  position:absolute;right:0;top:0;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  background:#E02020;color:#fff;
+  font-size:13px;font-weight:600;
+  padding:0 18px;
+  opacity:0;pointer-events:none;
+  transition:opacity .15s;
+  border-radius:0 0 0 0;
+  white-space:nowrap;
+  min-width:80px;
+}
+.swipe-row.swiped .swipe-action{opacity:1;pointer-events:auto;}
+/* On touch: always show a subtle grab hint */
+@media(hover:none){
+  .db{opacity:.4 !important;}
+  .swipe-hint{display:block;}
+}
+.swipe-hint{display:none;font-size:10px;color:var(--ink3);text-align:center;padding:4px 0 8px;font-style:italic;}
 .hint{font-size:11px;color:var(--ink3);text-align:center;padding:6px 0 16px;}
 
 /* ── Responsive ── */
@@ -257,19 +282,24 @@ tbody tr:active{background:var(--s2);}
   .save-bar-row{flex-direction:column;}
 }
 @media(max-width:580px){
-  /* Hide budget cells individually (not via col) so table reflows correctly */
-  td.col-budget, th.col-budget{display:none;}
-  /* Let table auto-size remaining columns */
+  /* Toutes les colonnes visibles — table auto pour que ça respire */
   table{table-layout:auto;}
-  /* Give Payé and Reste explicit min widths so they don't squeeze */
-  thead th.r:not(.col-budget){width:90px;min-width:80px;}
-  tbody td,.totrow td,.totrow .rc,.rc{padding:9px 10px;}
-  thead th{padding:8px 10px;}
-  .ni{padding:5px 4px;font-size:12px;}
+  /* Poste prend le reste, les 3 chiffres sont compacts */
+  thead th:first-child{width:auto;}
+  thead th.r{width:76px;}
+  /* Padding compact */
+  tbody td,.totrow td,.totrow .rc,.rc{padding:8px 8px;}
+  thead th{padding:7px 8px;}
+  /* Inputs compacts */
+  .ni{padding:4px 4px;font-size:12px;min-height:32px;}
+  /* Texte libellé */
   .lt{font-size:12px;}
   .ln{font-size:10px;}
+  /* Supprimer bouton caché sauf hover/touch */
+  td:last-child{width:24px;padding:0 2px;}
+  /* Addbar */
   .addbar-row{flex-direction:column;}
-  .btn-add{min-height:38px;}
+  .btn-add{min-height:40px;}
 }
 @media(max-width:420px){
   .an-donut-wrap{width:80px;height:80px;}
@@ -280,6 +310,7 @@ tbody tr:active{background:var(--s2);}
   .spill{display:none;}
 }
 </style>
+
 </head>
 <body>
 
@@ -327,117 +358,122 @@ tbody tr:active{background:var(--s2);}
   <div id="secs"></div>
 
   <!-- Analyse -->
+
   <div class="analyse-box">
     <div class="an-hdr">
       <h2>Analyse financière</h2>
       <p>Avancement des paiements et utilisation du prêt</p>
     </div>
 
-    <div class="an-card">
-      <div class="an-lbl">Avancement des paiements</div>
-      <div class="an-donut-row">
-        <div class="an-donut-wrap">
-          <svg viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#EDECEA" stroke-width="11"/>
-            <circle id="d1-fill" cx="50" cy="50" r="40" fill="none" stroke="#3A6B14" stroke-width="11"
-              stroke-dasharray="0 251.2" stroke-linecap="round" transform="rotate(-90 50 50)"
-              style="transition:stroke-dasharray .9s cubic-bezier(.4,0,.2,1)"/>
-          </svg>
-          <div class="an-donut-center">
-            <div class="an-donut-pct" id="d1-pct">—</div>
-            <div class="an-donut-sub">payé</div>
-          </div>
-        </div>
-        <div class="an-legend">
-          <div class="an-leg-item">
-            <span class="an-leg-dot" style="background:#3A6B14"></span>
-            <span class="an-leg-lbl">Réglé</span>
-            <span class="an-leg-val" style="color:#3A6B14" id="d1-pay">—</span>
-          </div>
-          <div class="an-leg-item">
-            <span class="an-leg-dot" style="background:#D4870A"></span>
-            <span class="an-leg-lbl">Reste à payer</span>
-            <span class="an-leg-val" style="color:#D4870A" id="d1-rem">—</span>
-          </div>
-          <div class="an-leg-item an-leg-total">
-            <span class="an-leg-lbl">Budget total</span>
-            <span class="an-leg-val" id="d1-tot">—</span>
-          </div>
-        </div>
+```
+<div class="an-card">
+  <div class="an-lbl">Avancement des paiements</div>
+  <div class="an-donut-row">
+    <div class="an-donut-wrap">
+      <svg viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#EDECEA" stroke-width="11"/>
+        <circle id="d1-fill" cx="50" cy="50" r="40" fill="none" stroke="#3A6B14" stroke-width="11"
+          stroke-dasharray="0 251.2" stroke-linecap="round" transform="rotate(-90 50 50)"
+          style="transition:stroke-dasharray .9s cubic-bezier(.4,0,.2,1)"/>
+      </svg>
+      <div class="an-donut-center">
+        <div class="an-donut-pct" id="d1-pct">—</div>
+        <div class="an-donut-sub">payé</div>
       </div>
     </div>
+    <div class="an-legend">
+      <div class="an-leg-item">
+        <span class="an-leg-dot" style="background:#3A6B14"></span>
+        <span class="an-leg-lbl">Réglé</span>
+        <span class="an-leg-val" style="color:#3A6B14" id="d1-pay">—</span>
+      </div>
+      <div class="an-leg-item">
+        <span class="an-leg-dot" style="background:#D4870A"></span>
+        <span class="an-leg-lbl">Reste à payer</span>
+        <span class="an-leg-val" style="color:#D4870A" id="d1-rem">—</span>
+      </div>
+      <div class="an-leg-item an-leg-total">
+        <span class="an-leg-lbl">Budget total</span>
+        <span class="an-leg-val" id="d1-tot">—</span>
+      </div>
+    </div>
+  </div>
+</div>
 
-    <div class="an-card">
-      <div class="an-lbl">Répartition du budget</div>
-      <div class="an-donut-row">
-        <div class="an-donut-wrap">
-          <svg viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#EDECEA" stroke-width="11"/>
-            <circle id="d2-base" cx="50" cy="50" r="40" fill="none" stroke="#1655A0" stroke-width="11"
-              stroke-dasharray="0 251.2" stroke-linecap="butt" transform="rotate(-90 50 50)"
-              style="transition:stroke-dasharray .9s,stroke-dashoffset .9s"/>
-            <circle id="d2-env" cx="50" cy="50" r="40" fill="none" stroke="#5B3FA6" stroke-width="11"
-              stroke-dasharray="0 251.2" stroke-linecap="butt" transform="rotate(-90 50 50)"
-              style="transition:stroke-dasharray .9s,stroke-dashoffset .9s"/>
-          </svg>
-          <div class="an-donut-center">
-            <div class="an-donut-pct" id="d2-pct" style="color:#1655A0">—</div>
-            <div class="an-donut-sub">base</div>
-          </div>
-        </div>
-        <div class="an-legend">
-          <div class="an-leg-item">
-            <span class="an-leg-dot" style="background:#1655A0"></span>
-            <span class="an-leg-lbl">Sections base</span>
-            <span class="an-leg-val" style="color:#1655A0" id="d2-base-v">—</span>
-          </div>
-          <div class="an-leg-item">
-            <span class="an-leg-dot" style="background:#5B3FA6"></span>
-            <span class="an-leg-lbl">Enveloppe</span>
-            <span class="an-leg-val" style="color:#5B3FA6" id="d2-env-v">—</span>
-          </div>
-          <div class="an-leg-item an-leg-total">
-            <span class="an-leg-lbl">Total budget</span>
-            <span class="an-leg-val" id="d2-tot">—</span>
-          </div>
-        </div>
+<div class="an-card">
+  <div class="an-lbl">Répartition du budget</div>
+  <div class="an-donut-row">
+    <div class="an-donut-wrap">
+      <svg viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#EDECEA" stroke-width="11"/>
+        <circle id="d2-base" cx="50" cy="50" r="40" fill="none" stroke="#1655A0" stroke-width="11"
+          stroke-dasharray="0 251.2" stroke-linecap="butt" transform="rotate(-90 50 50)"
+          style="transition:stroke-dasharray .9s,stroke-dashoffset .9s"/>
+        <circle id="d2-env" cx="50" cy="50" r="40" fill="none" stroke="#5B3FA6" stroke-width="11"
+          stroke-dasharray="0 251.2" stroke-linecap="butt" transform="rotate(-90 50 50)"
+          style="transition:stroke-dasharray .9s,stroke-dashoffset .9s"/>
+      </svg>
+      <div class="an-donut-center">
+        <div class="an-donut-pct" id="d2-pct" style="color:#1655A0">—</div>
+        <div class="an-donut-sub">base</div>
       </div>
     </div>
+    <div class="an-legend">
+      <div class="an-leg-item">
+        <span class="an-leg-dot" style="background:#1655A0"></span>
+        <span class="an-leg-lbl">Sections base</span>
+        <span class="an-leg-val" style="color:#1655A0" id="d2-base-v">—</span>
+      </div>
+      <div class="an-leg-item">
+        <span class="an-leg-dot" style="background:#5B3FA6"></span>
+        <span class="an-leg-lbl">Enveloppe</span>
+        <span class="an-leg-val" style="color:#5B3FA6" id="d2-env-v">—</span>
+      </div>
+      <div class="an-leg-item an-leg-total">
+        <span class="an-leg-lbl">Total budget</span>
+        <span class="an-leg-val" id="d2-tot">—</span>
+      </div>
+    </div>
+  </div>
+</div>
 
-    <div class="an-card">
-      <div class="an-lbl">Utilisation du prêt</div>
-      <div class="an-bar-amount" id="pa-pret-lbl">—</div>
-      <div class="an-bar-track">
-        <div class="an-bar-seg" id="pa-base" style="background:#1655A0;border-radius:20px 0 0 20px;left:0;width:0%"></div>
-        <div class="an-bar-seg" id="pa-env"  style="background:#5B3FA6;width:0%"></div>
-        <div class="an-bar-seg" id="pa-libre" style="background:#7AC94A;width:0%"></div>
-        <div class="an-bar-seg" id="pa-over"  style="background:#E07070;border-radius:0 20px 20px 0;width:0%"></div>
-      </div>
-      <div class="an-bar-items">
-        <div class="an-bar-item"><span class="an-leg-dot" style="background:#1655A0"></span><span class="an-leg-lbl">Sections base</span><span class="an-leg-val" style="color:#1655A0" id="pa-base-v">—</span></div>
-        <div class="an-bar-item"><span class="an-leg-dot" style="background:#5B3FA6"></span><span class="an-leg-lbl">Enveloppe planifiée</span><span class="an-leg-val" style="color:#5B3FA6" id="pa-env-v">—</span></div>
-        <div class="an-bar-item"><span class="an-leg-dot" style="background:#7AC94A"></span><span class="an-leg-lbl">Libre dans le prêt</span><span class="an-leg-val" style="color:#3A6B14" id="pa-libre-v">—</span></div>
-        <div class="an-bar-item" id="pa-over-row" style="display:none"><span class="an-leg-dot" style="background:#E07070"></span><span class="an-leg-lbl">Hors prêt (fonds propres)</span><span class="an-leg-val" style="color:#A82C2C" id="pa-over-v">—</span></div>
-      </div>
-    </div>
+<div class="an-card">
+  <div class="an-lbl">Utilisation du prêt</div>
+  <div class="an-bar-amount" id="pa-pret-lbl">—</div>
+  <div class="an-bar-track">
+    <div class="an-bar-seg" id="pa-base" style="background:#1655A0;border-radius:20px 0 0 20px;left:0;width:0%"></div>
+    <div class="an-bar-seg" id="pa-env"  style="background:#5B3FA6;width:0%"></div>
+    <div class="an-bar-seg" id="pa-libre" style="background:#7AC94A;width:0%"></div>
+    <div class="an-bar-seg" id="pa-over"  style="background:#E07070;border-radius:0 20px 20px 0;width:0%"></div>
+  </div>
+  <div class="an-bar-items">
+    <div class="an-bar-item"><span class="an-leg-dot" style="background:#1655A0"></span><span class="an-leg-lbl">Sections base</span><span class="an-leg-val" style="color:#1655A0" id="pa-base-v">—</span></div>
+    <div class="an-bar-item"><span class="an-leg-dot" style="background:#5B3FA6"></span><span class="an-leg-lbl">Enveloppe planifiée</span><span class="an-leg-val" style="color:#5B3FA6" id="pa-env-v">—</span></div>
+    <div class="an-bar-item"><span class="an-leg-dot" style="background:#7AC94A"></span><span class="an-leg-lbl">Libre dans le prêt</span><span class="an-leg-val" style="color:#3A6B14" id="pa-libre-v">—</span></div>
+    <div class="an-bar-item" id="pa-over-row" style="display:none"><span class="an-leg-dot" style="background:#E07070"></span><span class="an-leg-lbl">Hors prêt (fonds propres)</span><span class="an-leg-val" style="color:#A82C2C" id="pa-over-v">—</span></div>
+  </div>
+</div>
 
-    <div class="an-summary">
-      <div class="an-sum-item"><div class="an-sum-lbl">Budget total</div><div class="an-sum-val" id="f-total">—</div><div class="an-sum-sub">Toutes dépenses</div></div>
-      <div class="an-sum-item"><div class="an-sum-lbl">Déjà payé</div><div class="an-sum-val" style="color:#3A6B14" id="f-paye">—</div><div class="an-sum-sub" id="f-paye-s">—</div></div>
-      <div class="an-sum-item"><div class="an-sum-lbl">Reste à payer</div><div class="an-sum-val" style="color:#D4870A" id="f-reste">—</div><div class="an-sum-sub" id="f-reste-s">—</div></div>
-      <div class="an-sum-item"><div class="an-sum-lbl">Fonds propres</div><div class="an-sum-val" style="color:#A82C2C" id="f-propres">—</div><div class="an-sum-sub" id="f-propres-s">—</div></div>
-    </div>
+<div class="an-summary">
+  <div class="an-sum-item"><div class="an-sum-lbl">Budget total</div><div class="an-sum-val" id="f-total">—</div><div class="an-sum-sub">Toutes dépenses</div></div>
+  <div class="an-sum-item"><div class="an-sum-lbl">Déjà payé</div><div class="an-sum-val" style="color:#3A6B14" id="f-paye">—</div><div class="an-sum-sub" id="f-paye-s">—</div></div>
+  <div class="an-sum-item"><div class="an-sum-lbl">Reste à payer</div><div class="an-sum-val" style="color:#D4870A" id="f-reste">—</div><div class="an-sum-sub" id="f-reste-s">—</div></div>
+  <div class="an-sum-item"><div class="an-sum-lbl">Fonds propres</div><div class="an-sum-val" style="color:#A82C2C" id="f-propres">—</div><div class="an-sum-sub" id="f-propres-s">—</div></div>
+</div>
 
-    <div class="an-matelas">
-      <div>
-        <div class="an-mat-title">Matelas disponible dans l'enveloppe</div>
-        <div class="an-mat-sub" id="mb-sub">Marge libre avant fonds propres</div>
-      </div>
-      <div class="an-mat-val" id="mb-val">—</div>
-    </div>
+<div class="an-matelas">
+  <div>
+    <div class="an-mat-title">Matelas disponible dans l'enveloppe</div>
+    <div class="an-mat-sub" id="mb-sub">Marge libre avant fonds propres</div>
+  </div>
+  <div class="an-mat-val" id="mb-val">—</div>
+</div>
+```
+
   </div>
 
   <!-- Save -->
+
   <div class="save-bar">
     <div class="save-bar-title">Sauvegarde & partage</div>
     <div class="save-bar-row">
@@ -565,11 +601,80 @@ function shareLink(){syncAll();try{const b64=btoa(encodeURIComponent(JSON.string
 function loadFromHash(){try{const h=location.hash;if(!h.startsWith('#d='))return false;D=JSON.parse(decodeURIComponent(atob(h.slice(3))));history.replaceState(null,'',location.pathname);toast('Données chargées ✓');return true;}catch(e){return false;}}
 function syncAll(){D.sections.forEach((s,si)=>{const sn=document.querySelector('#S'+si+' .sname');if(sn)s.name=sn.textContent.trim();s.rows.forEach((r,ri)=>{const lt=document.querySelector('#R'+si+'_'+ri+' .lt'),ln=document.querySelector('#R'+si+'_'+ri+' .ln'),bi=$('b_'+si+'_'+ri),pi=$('p_'+si+'_'+ri);if(lt)r.l=lt.textContent;if(ln)r.n=ln.textContent;if(bi)r.b=+bi.value||0;if(pi)r.p=+pi.value||0;});});D.pret=+$('pret').value||0;}
 
+
+// ── Swipe to delete ── 
+function initSwipe(){
+  document.querySelectorAll('tr.swipe-row').forEach(row=>{
+    if(row._swipeInit) return;
+    row._swipeInit=true;
+    let startX=0,startY=0,dx=0,swiped=false;
+    const tds=()=>row.querySelectorAll('td');
+
+    // Create delete overlay on first touch
+    let overlay=row.querySelector('.swipe-action');
+    if(!overlay){
+      overlay=document.createElement('div');
+      overlay.className='swipe-action';
+      overlay.textContent='Supprimer';
+      overlay.addEventListener('click',e=>{
+        e.stopPropagation();
+        const si=+row.dataset.si, ri=+row.dataset.ri;
+        delRow(si,ri);
+      });
+      row.style.position='relative';
+      row.appendChild(overlay);
+    }
+
+    row.addEventListener('touchstart',e=>{
+      // close any other open rows
+      document.querySelectorAll('tr.swipe-row.swiped').forEach(r=>{
+        if(r!==row){ r.classList.remove('swiped'); r.querySelectorAll('td').forEach(td=>td.style.transform=''); }
+      });
+      startX=e.touches[0].clientX;
+      startY=e.touches[0].clientY;
+      dx=0;
+    },{passive:true});
+
+    row.addEventListener('touchmove',e=>{
+      dx=e.touches[0].clientX-startX;
+      const dy=Math.abs(e.touches[0].clientY-startY);
+      // only swipe if horizontal gesture
+      if(Math.abs(dx)>dy && Math.abs(dx)>8){
+        const shift=Math.max(-90,Math.min(0,dx));
+        tds().forEach(td=>td.style.transform=`translateX(${shift}px)`);
+        if(dx<-40){ row.classList.add('swiped'); }
+        else{ row.classList.remove('swiped'); }
+      }
+    },{passive:true});
+
+    row.addEventListener('touchend',e=>{
+      if(dx>-40){
+        tds().forEach(td=>td.style.transform='');
+        row.classList.remove('swiped');
+      } else {
+        tds().forEach(td=>td.style.transform='translateX(-90px)');
+        row.classList.add('swiped');
+      }
+    },{passive:true});
+  });
+}
+
+// Close swipe when tapping elsewhere
+document.addEventListener('touchstart',e=>{
+  if(!e.target.closest('tr.swipe-row')){
+    document.querySelectorAll('tr.swipe-row.swiped').forEach(r=>{
+      r.classList.remove('swiped');
+      r.querySelectorAll('td').forEach(td=>td.style.transform='');
+    });
+  }
+},{passive:true});
+
 function render(){
   $('pret').value=D.pret;
   const c=$('secs');c.innerHTML='';
   D.sections.forEach((s,si)=>c.appendChild(buildSec(s,si)));
   calc();
+  setTimeout(initSwipe,50);
 }
 
 function buildSec(s,si){
@@ -578,7 +683,7 @@ function buildSec(s,si){
   const isEnv=s.type==='enveloppe';
   const rows=s.rows.map((r,ri)=>{
     const isMV=r.b<0;
-    return `<tr id="R${si}_${ri}" class="${isMV?'row-mv':''}">
+    return `<tr id="R${si}_${ri}" class="swipe-row${isMV?' row-mv':''}" data-si="${si}" data-ri="${ri}">
 <td><span class="lt" contenteditable="true" spellcheck="false" onblur="D.sections[${si}].rows[${ri}].l=this.textContent;save()">${esc(r.l)}</span>${isMV?'<span class="mv-badge">Moins-value</span>':''}<span class="ln" contenteditable="true" spellcheck="false" onblur="D.sections[${si}].rows[${ri}].n=this.textContent;save()">${esc(r.n)}</span></td>
 <td class="col-budget"><input class="ni${isMV?' ni-mv':''}" id="b_${si}_${ri}" type="number" step="0.01" inputmode="decimal" value="${r.b}" oninput="onBI(this,${si},${ri})"></td>
 <td><input class="ni" id="p_${si}_${ri}" type="number" step="0.01" min="0" inputmode="decimal" value="${r.p}" oninput="calc()"${isMV?' disabled style="opacity:.3;pointer-events:none"':''}></td>
@@ -606,6 +711,7 @@ function buildSec(s,si){
       <td></td>
     </tr></tfoot>
   </table>
+  <div class="swipe-hint">← Glissez une ligne vers la gauche pour la supprimer</div>
   <div class="addbar"><div class="addbar-row">
     <button class="btn-add" onclick="addRow(${si},false)">+ Ajouter une ligne</button>
     <button class="btn-add btn-add-mv" onclick="addRow(${si},true)">− Moins-value</button>
@@ -637,6 +743,9 @@ function toast(msg){const el=$('toast');el.textContent=msg;el.style.opacity='1';
 loadFromHash();
 render();
 loadSaveTime();
+// initSwipe called after each render
+
 </script>
+
 </body>
 </html>
