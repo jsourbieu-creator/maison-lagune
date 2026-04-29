@@ -121,10 +121,9 @@ tbody tr:last-child td{border-bottom:none;}
 .totrow td,.totrow .rc{background:var(--s2);font-weight:600;border-top:.5px solid var(--bd2) !important;border-bottom:none !important;padding:11px 14px;vertical-align:middle;}
 .totrow .rc{text-align:right;}
 .tl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);}
-.db{border:none;background:none;color:var(--ink3);font-size:13px;cursor:pointer;padding:4px 6px;border-radius:5px;min-width:30px;min-height:30px;display:flex;align-items:center;justify-content:center;transition:opacity .1s,background .1s;}
-@media(hover:hover){.db{opacity:0;}tr:hover .db{opacity:1;}}
-@media(hover:none){.db{opacity:1;background:#FFE8E8;color:#C0392B;border-radius:8px;min-width:36px;min-height:36px;}}
-.db:hover,.db:active{background:var(--rdbg);color:var(--red);opacity:1;}
+.db{border:none;background:#FFE8E8;color:#C0392B;font-size:15px;cursor:pointer;padding:0;border-radius:8px;width:36px;height:36px;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center;transition:background .1s;-webkit-tap-highlight-color:transparent;}
+.db:hover,.db:active{background:#ffd0d0;}
+@media(hover:hover){.db{background:none;color:var(--ink3);}tr:hover .db{background:#FFE8E8;color:#C0392B;}}
 .row-mv td{background:#F6FCF0 !important;}
 .mv-badge{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;background:var(--gnbg);color:var(--green);margin-left:6px;vertical-align:middle;text-transform:uppercase;letter-spacing:.04em;}
 .addbar{padding:10px 14px;border-top:.5px solid var(--bd);background:var(--s2);}
@@ -471,7 +470,7 @@ function buildSec(s,si){
 <td><input class="ni${isMV?' ni-mv':''}" id="b_${si}_${ri}" type="number" step="0.01" inputmode="decimal" value="${r.b}"${isMV?' placeholder="ex: 1000"':''} oninput="onBI(this,${si},${ri})"></td>
 <td><input class="ni" id="p_${si}_${ri}" type="number" step="0.01" min="0" inputmode="decimal" value="${r.p}" oninput="calc()"${isMV?' disabled style="opacity:.3;pointer-events:none"':''}></td>
 <td class="rc no" id="r_${si}_${ri}">—</td>
-<td><button class="db" onclick="delRow(${si},${ri})" title="Supprimer">✕</button></td>
+<td><button class="db" data-del-si="${si}" data-del-ri="${ri}" title="Supprimer">✕</button></td>
 </tr>`;
   }).join('');
   d.innerHTML=`
@@ -526,61 +525,21 @@ function dl(){
  
 function toast(msg){const el=$('toast');el.textContent=msg;el.style.opacity='1';el.style.transform='translateX(-50%) translateY(0)';setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(-50%) translateY(8px)';},2800);}
  
-function closeAllSwipes(except){
-  document.querySelectorAll('tr[data-si].swiped').forEach(r=>{
-    if(r===except)return;
-    r.classList.remove('swiped');
-    r.querySelectorAll('td').forEach(t=>t.style.transform='');
-    const o=r.querySelector('.swipe-action');
-    if(o){o.style.opacity='0';o.style.pointerEvents='none';}
-  });
-}
+function initSwipe(){} // swipe désactivé, bouton ✕ toujours visible
  
-function initSwipe(){
-  document.querySelectorAll('tr[data-si]').forEach(row=>{
-    if(row._swipeInit)return;row._swipeInit=true;
-    let sx=0,sy=0,dx=0,swiped=false;
-    let ov=row.querySelector('.swipe-action');
-    if(!ov){
-      ov=document.createElement('div');
-      ov.className='swipe-action';
-      ov.style.cssText='position:absolute;right:0;top:0;height:100%;display:flex;align-items:center;justify-content:center;background:#E02020;color:#fff;font-size:13px;font-weight:600;padding:0 22px;opacity:0;pointer-events:none;min-width:88px;z-index:2;';
-      ov.textContent='Supprimer';
-      ov.addEventListener('touchend',e=>{e.stopPropagation();e.preventDefault();delRow(+row.dataset.si,+row.dataset.ri);},{passive:false});
-      row.style.position='relative';row.style.overflow='hidden';
-      row.appendChild(ov);
-    }
-    row.addEventListener('touchstart',e=>{
-      closeAllSwipes(row);
-      sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;swiped=false;
-    },{passive:true});
-    row.addEventListener('touchmove',e=>{
-      dx=e.touches[0].clientX-sx;
-      const dy=Math.abs(e.touches[0].clientY-sy);
-      if(Math.abs(dx)>dy&&Math.abs(dx)>8){
-        const sh=Math.max(-88,Math.min(0,dx));
-        row.querySelectorAll('td').forEach(t=>t.style.transform=`translateX(${sh}px)`);
-        const show=dx<-30;
-        ov.style.opacity=show?'1':'0';
-        ov.style.pointerEvents=show?'auto':'none';
-        swiped=dx<-44;
-        row.classList.toggle('swiped',swiped);
-      }
-    },{passive:true});
-    row.addEventListener('touchend',()=>{
-      if(!swiped){
-        row.querySelectorAll('td').forEach(t=>t.style.transform='');
-        ov.style.opacity='0';ov.style.pointerEvents='none';
-        row.classList.remove('swiped');
-      } else {
-        row.querySelectorAll('td').forEach(t=>t.style.transform='translateX(-88px)');
-        ov.style.opacity='1';ov.style.pointerEvents='auto';
-        row.classList.add('swiped');
-      }
-    },{passive:true});
-  });
-}
-document.addEventListener('touchstart',e=>{if(!e.target.closest('tr[data-si]'))closeAllSwipes(null);},{passive:true});
+// Delegation tactile pour les boutons supprimer
+document.addEventListener('touchend', function(e){
+  const btn = e.target.closest('.db[data-del-si]');
+  if(!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  delRow(+btn.dataset.delSi, +btn.dataset.delRi);
+}, {passive:false});
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('.db[data-del-si]');
+  if(!btn) return;
+  delRow(+btn.dataset.delSi, +btn.dataset.delRi);
+});
  
 // ── Partage par lien (hash) ──
 const LS_KEY = 'chantier_lagune_v1';
