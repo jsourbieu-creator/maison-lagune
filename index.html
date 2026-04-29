@@ -177,6 +177,7 @@ tbody tr:last-child td{border-bottom:none;}
 .db{border:none;background:none;color:var(--ink3);font-size:13px;cursor:pointer;padding:4px 6px;border-radius:5px;min-width:30px;min-height:30px;display:flex;align-items:center;justify-content:center;opacity:.2;transition:opacity .1s,background .1s;}
 .db:hover,.db:active{background:var(--rdbg);color:var(--red);opacity:1;}
 @media(hover:hover){.db{opacity:0;}tr:hover .db{opacity:1;}}
+@media(hover:none){.db{opacity:1;}}
 .row-mv td{background:#F6FCF0 !important;}
 .mv-badge{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;background:var(--gnbg);color:var(--green);margin-left:6px;vertical-align:middle;text-transform:uppercase;letter-spacing:.04em;}
 .addbar{padding:10px 14px;border-top:.5px solid var(--bd);background:var(--s2);}
@@ -261,15 +262,18 @@ tbody tr:last-child td{border-bottom:none;}
 @media(max-width:580px){
   table{table-layout:auto;}
   thead th:first-child{width:auto;}
-  thead th.r{width:76px;}
+  thead th.r{width:72px;}
   tbody td,.totrow td,.totrow .rc,.rc{padding:8px 8px;}
   thead th{padding:7px 8px;}
   .ni{padding:4px 4px;font-size:12px;min-height:32px;}
   .lt{font-size:12px;}
   .ln{font-size:10px;}
-  td:last-child{width:24px;padding:0 2px;}
+  /* Delete button toujours visible, rouge, grand */
+  td:last-child{width:40px;padding:0 4px;vertical-align:middle;text-align:center;}
+  .db{opacity:1 !important;background:#FFE8E8;color:#C0392B;border-radius:8px;min-width:32px;min-height:32px;font-size:16px;font-weight:700;}
+  /* Addbar : boutons empilés */
   .addbar-row{flex-direction:column;}
-  .btn-add{min-height:40px;}
+  .btn-add{min-height:44px;font-size:14px;}
 }
 @media(max-width:420px){
   .an-donut-wrap{width:80px;height:80px;}
@@ -397,69 +401,41 @@ tbody tr:last-child td{border-bottom:none;}
 <div class="toast" id="toast" style="position:fixed;bottom:calc(1.25rem + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(8px);background:var(--ink);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.18);white-space:nowrap;"></div>
 
 <script>
-// ── Firebase config ──
-const firebaseConfig = {
-  apiKey: "AIzaSyC6bXRlQN8DF1vetFYF9rSPImmgxVFfmWE",
-  authDomain: "maison-lagune-budget.firebaseapp.com",
-  databaseURL: "https://maison-lagune-budget-default-rtdb.firebaseio.com",
-  projectId: "maison-lagune-budget",
-  storageBucket: "maison-lagune-budget.firebasestorage.app",
-  messagingSenderId: "895376562540",
-  appId: "1:895376562540:web:2017d932a64fefa2c97b49"
-};
-let db, ref, firebaseOk = false;
-try {
-  firebase.initializeApp(firebaseConfig);
-  db = firebase.database();
-  ref = db.ref('chantier');
-  firebaseOk = true;
-} catch(e) {
-  console.error('Firebase init error:', e);
-}
-
-// ── State ──
-const CIRC = 251.2;
-let D = JSON.parse(document.getElementById('D').textContent);
-let _fromFirebase = false; // flag to avoid loop
+// ── Firebase REST API (no SDK needed) ──
+const FB_URL = 'https://maison-lagune-budget-default-rtdb.firebaseio.com/chantier.json';
 let _saveTimer = null;
+let _lastHash = '';
+let _fromRemote = false;
 
-// ── Helpers ──
-const fr2 = n => new Intl.NumberFormat('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n)+'\u202f€';
-const fr0 = n => new Intl.NumberFormat('fr-FR').format(Math.round(Math.abs(n)))+'\u202f€';
-const pct1 = n => n.toFixed(1)+'\u202f%';
-const $ = id => document.getElementById(id);
-const txt = (id,v) => { const e=$(id); if(e) e.textContent=v; };
-const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function setDash(id,p){const el=$(id);if(!el)return;const v=Math.max(0,Math.min(1,p))*CIRC;el.setAttribute('stroke-dasharray',v+' '+CIRC);}
-function setDash2(id,p,off){const el=$(id);if(!el)return;const v=Math.max(0,Math.min(1,p))*CIRC;el.setAttribute('stroke-dasharray',v+' '+CIRC);el.setAttribute('stroke-dashoffset',-off*CIRC);}
-function setW(id,w){const e=$(id);if(e)e.style.width=Math.max(0,w).toFixed(1)+'%';}
-function setL(id,l){const e=$(id);if(e)e.style.left=Math.max(0,l).toFixed(1)+'%';}
-function setSyncStatus(status, msg){
-  const dot=$('sync-dot');
-  if(dot){dot.className='sync-dot '+status;}
-  txt('save-status', msg);
+function fbRead(){
+  return fetch(FB_URL).then(r=>r.json()).catch(()=>null);
+}
+function fbWrite(data){
+  return fetch(FB_URL, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(data)
+  }).then(r=>r.json()).catch(e=>{ throw e; });
 }
 
-// ── Firebase sync ──
+function dataHash(d){ try{ return JSON.stringify(d); }catch(e){ return ''; } }
+
 function scheduleSave(){
-  if(!firebaseOk) return;
   clearTimeout(_saveTimer);
   setSyncStatus('syncing','Synchronisation…');
-  _saveTimer = setTimeout(()=>{
-    if(!_fromFirebase) doSave();
-  }, 1200);
+  _saveTimer = setTimeout(doSave, 1200);
 }
 
 function doSave(){
-  if(!firebaseOk || !ref) { setSyncStatus('error', 'Firebase non disponible'); return; }
   syncAll();
-  ref.set(D).then(()=>{
+  fbWrite(D).then(()=>{
+    _lastHash = dataHash(D);
     const now = new Date();
-    const ts = now.toLocaleDateString('fr-FR')+' à '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    setSyncStatus('online','Synchronisé le '+ts);
+    const ts = now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    setSyncStatus('online','Synchronisé à '+ts);
   }).catch(e=>{
     setSyncStatus('error','Erreur — vérifiez les règles Firebase');
-    console.error('Firebase write error:', e.code, e.message);
+    console.error('Firebase write error:', e);
   });
 }
 
@@ -469,193 +445,43 @@ function forceSave(){
   toast('Enregistré ✓');
 }
 
-// Listen for changes from Firebase (other device)
-if(firebaseOk && ref) {
-  ref.on('value', snapshot=>{
-    const data = snapshot.val();
-    if(!data) { render(); return; }
-    _fromFirebase = true;
+// Poll Firebase every 5 seconds for changes from other device
+function startPolling(){
+  setInterval(()=>{
+    if(_saveTimer) return; // don't poll while saving
+    fbRead().then(data=>{
+      if(!data) return;
+      const h = dataHash(data);
+      if(h !== _lastHash){
+        _lastHash = h;
+        _fromRemote = true;
+        D = data;
+        render();
+        _fromRemote = false;
+        const now = new Date();
+        const ts = now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+        setSyncStatus('online','Mis à jour à '+ts);
+        toast('Agathe a modifié le budget 🔄');
+      } else {
+        setSyncStatus('online','Connecté');
+      }
+    }).catch(()=>setSyncStatus('error','Hors ligne'));
+  }, 5000);
+}
+
+// Initial load from Firebase
+fbRead().then(data=>{
+  if(data && data.sections){
     D = data;
-    render();
-    _fromFirebase = false;
-    const now = new Date();
-    const ts = now.toLocaleDateString('fr-FR')+' à '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    setSyncStatus('online','Synchronisé le '+ts);
-  }, err=>{
-    console.error('Firebase read error:', err.code, err.message);
-    setSyncStatus('error','Erreur Firebase — vérifiez les règles ('+err.code+')');
-    render(); // still render with default data
-  });
-
-  db.ref('.info/connected').on('value', snap=>{
-    if(snap.val()) setSyncStatus('online','Connecté');
-    else setSyncStatus('error','Hors ligne');
-  });
-} else {
-  setSyncStatus('error','Firebase non initialisé');
+    _lastHash = dataHash(D);
+    setSyncStatus('online','Connecté');
+  } else {
+    // First time: push default data
+    doSave();
+  }
   render();
-}
-
-// ── Calc ──
-function calc(){
-  let tB=0,tP=0,baseB=0,envB=0,norelisR=0;
-  D.sections.forEach((s,si)=>{
-    let sB=0,sP=0;
-    s.rows.forEach((r,ri)=>{
-      const bi=$('b_'+si+'_'+ri),pi=$('p_'+si+'_'+ri);
-      const b=bi?+bi.value||0:r.b, p=pi?+pi.value||0:r.p;
-      r.b=b;r.p=p;
-      const re=b-p; sB+=b; sP+=p;
-      const rc=$('r_'+si+'_'+ri);
-      if(rc){rc.textContent=fr2(re);rc.className='rc '+(re<=0?'ok':p>0?'pt':'no');}
-    });
-    tB+=sB; tP+=sP;
-    if(s.type==='enveloppe') envB+=sB; else baseB+=sB;
-    if(s.name.toLowerCase().includes('norelis')) norelisR+=sB-sP;
-    const sR=sB-sP;
-    txt('sb_'+si,fr2(sB)); txt('sp_'+si,fr2(sP));
-    const sr=$('sr_'+si);
-    if(sr){sr.textContent=fr2(sR);sr.className='rc '+(sR<=0?'ok':sP>0?'pt':'no');}
-    const sp=$('spi_'+si);
-    if(sp){sp.textContent=sR<=0?'Soldé':sP>0?'Reste '+fr0(sR):'Non payé';sp.className='spill '+(sR<=0?'p-ok':sP>0?'p-pt':'p-no');}
-  });
-  const tR=tB-tP,pret=+$('pret').value||0,envDispo=pret-baseB,matelas=envDispo-envB,propres=Math.max(0,-matelas),pct=tB>0?tP/tB*100:0;
-  txt('kt',fr0(tB));txt('kp',fr0(tP));txt('kr',fr0(tR));txt('ke',fr0(pret));txt('kf',fr0(propres));
-  txt('kfs',propres>0?'hors prêt':'dans le prêt');txt('pp',pct1(pct));
-  const pf=$('pf');if(pf)pf.style.width=Math.min(pct,100)+'%';
-  txt('ps',fr0(tP)+' réglés sur '+fr0(tB));
-  const pd=$('pd');
-  if(pd){pd.textContent=propres>0?'⚠ dépassement de '+fr0(propres)+' → fonds propres':'✓ tout dans le prêt — excédent '+fr0(Math.abs(matelas));pd.className='pdelta '+(propres===0?'ok':'warn');}
-  txt('rc-pret',fr0(pret));txt('rc-base',fr0(baseB));
-  const edEl=$('rc-env-dispo');if(edEl){edEl.textContent=fr0(Math.max(0,envDispo));edEl.className='rv '+(envDispo<0?'rd':'p');}
-  const euEl=$('rc-env-used');if(euEl){euEl.textContent=fr0(envB);euEl.className='rv '+(envB>envDispo?'rd':'a');}
-  txt('rc-env-used-s',envB>envDispo?'⚠ Dépasse le prêt !':'Ce que vous avez planifié');
-  const mEl=$('rc-matelas');if(mEl){mEl.textContent=matelas>=0?fr0(matelas):'−'+fr0(Math.abs(matelas));mEl.style.color=matelas>=0?'#5B3FA6':'#A82C2C';}
-  txt('rc-matelas-s',matelas>=0?'Marge libre avant fonds propres':'⚠ Fonds propres nécessaires');
-  setDash('d1-fill',tB>0?tP/tB:0);
-  txt('d1-pct',pct1(pct));txt('d1-pay',fr0(tP));txt('d1-rem',fr0(tR));txt('d1-tot',fr0(tB));
-  const bR=tB>0?baseB/tB:0,eR=tB>0?envB/tB:0;
-  setDash2('d2-base',bR,0);setDash2('d2-env',eR,bR);
-  txt('d2-pct',tB>0?Math.round(bR*100)+'%':'—');txt('d2-base-v',fr0(baseB));txt('d2-env-v',fr0(envB));txt('d2-tot',fr0(tB));
-  txt('pa-pret-lbl',fr0(pret));
-  const tot4=Math.max(pret,baseB+envB);
-  const bW=tot4>0?baseB/tot4*100:0,eW=tot4>0?Math.min(envB,envDispo)/tot4*100:0;
-  const lW=tot4>0?Math.max(0,matelas)/tot4*100:0,oW=tot4>0?Math.max(0,-matelas)/tot4*100:0;
-  setW('pa-base',bW);setL('pa-env',bW);setW('pa-env',eW);
-  setL('pa-libre',bW+eW);setW('pa-libre',lW);setL('pa-over',bW+eW);setW('pa-over',oW);
-  txt('pa-base-v',fr0(baseB));txt('pa-env-v',fr0(envB));txt('pa-libre-v',matelas>=0?fr0(matelas):'—');
-  const oRow=$('pa-over-row');if(oRow)oRow.style.display=propres>0?'flex':'none';txt('pa-over-v',fr0(propres));
-  txt('f-total',fr0(tB));txt('f-paye',fr0(tP));txt('f-paye-s',pct1(pct)+' du budget réglé');
-  txt('f-reste',fr0(tR));txt('f-reste-s','dont '+fr0(norelisR)+' Norelis');
-  txt('f-propres',propres>0?fr0(propres):'0 €');txt('f-propres-s',propres>0?'Hors enveloppe prêt':'✓ Tout financé par le prêt');
-  const mbEl=$('mb-val');if(mbEl){mbEl.textContent=matelas>=0?fr0(matelas):'−'+fr0(Math.abs(matelas));mbEl.style.color=matelas>=0?'#5B3FA6':'#A82C2C';}
-  txt('mb-sub',matelas>=0?'Vous pouvez encore dépenser '+fr0(matelas)+' sans fonds propres':'⚠ Dépassement de '+fr0(Math.abs(matelas))+' → fonds propres nécessaires');
-  D.pret=pret;
-  if(!_fromFirebase) scheduleSave();
-}
-
-function syncAll(){
-  D.sections.forEach((s,si)=>{
-    const sn=document.querySelector('#S'+si+' .sname');if(sn)s.name=sn.textContent.trim();
-    s.rows.forEach((r,ri)=>{
-      const lt=document.querySelector('#R'+si+'_'+ri+' .lt'),ln=document.querySelector('#R'+si+'_'+ri+' .ln');
-      const bi=$('b_'+si+'_'+ri),pi=$('p_'+si+'_'+ri);
-      if(lt)r.l=lt.textContent;if(ln)r.n=ln.textContent;
-      if(bi)r.b=+bi.value||0;if(pi)r.p=+pi.value||0;
-    });
-  });
-  D.pret=+$('pret').value||0;
-}
-
-function render(){
-  $('pret').value=D.pret;
-  const c=$('secs');c.innerHTML='';
-  D.sections.forEach((s,si)=>c.appendChild(buildSec(s,si)));
-  calc();
-  setTimeout(initSwipe,60);
-}
-
-function buildSec(s,si){
-  const d=document.createElement('div');
-  d.className='sec type-'+(s.type||'base');d.id='S'+si;
-  const isEnv=s.type==='enveloppe';
-  const rows=s.rows.map((r,ri)=>{
-    const isMV=r.b<0;
-    return `<tr id="R${si}_${ri}" class="swipe-row${isMV?' row-mv':''}" data-si="${si}" data-ri="${ri}"${isMV?' data-mv="1"':''}>
-<td><span class="lt" contenteditable="true" spellcheck="false" onblur="D.sections[${si}].rows[${ri}].l=this.textContent;scheduleSave()">${esc(r.l)}</span>${isMV?'<span class="mv-badge">Moins-value</span>':''}<span class="ln" contenteditable="true" spellcheck="false" onblur="D.sections[${si}].rows[${ri}].n=this.textContent;scheduleSave()">${esc(r.n)}</span></td>
-<td><input class="ni${isMV?' ni-mv':''}" id="b_${si}_${ri}" type="number" step="0.01" inputmode="decimal" value="${r.b}"${isMV?' placeholder="ex: 1000"':''} oninput="onBI(this,${si},${ri})"></td>
-<td><input class="ni" id="p_${si}_${ri}" type="number" step="0.01" min="0" inputmode="decimal" value="${r.p}" oninput="calc()"${isMV?' disabled style="opacity:.3;pointer-events:none"':''}></td>
-<td class="rc no" id="r_${si}_${ri}">—</td>
-<td style="text-align:center;vertical-align:middle;width:32px"><button class="db" onclick="delRow(${si},${ri})">✕</button></td>
-</tr>`;
-  }).join('');
-  d.innerHTML=`
-<div class="shdr" onclick="tog(${si})">
-  <span class="sarr o" id="ar${si}">▶</span>
-  <span class="sname" contenteditable="true" spellcheck="false" onclick="event.stopPropagation()" onblur="D.sections[${si}].name=this.textContent.trim();scheduleSave()">${esc(s.name)}</span>
-  <button class="stype-btn ${isEnv?'stype-enveloppe':'stype-base'}" onclick="event.stopPropagation();toggleType(${si})">${isEnv?'Enveloppe':'Base'}</button>
-  <span class="spill p-au" id="spi_${si}"></span>
-  <button class="sdel" onclick="event.stopPropagation();delSec(${si})">✕</button>
-</div>
-<div class="sbody" id="bd${si}">
-  <table><colgroup><col><col style="width:15%"><col style="width:15%"><col style="width:18%"><col style="width:32px"></colgroup>
-    <thead><tr><th>Poste</th><th class="r">Budget</th><th class="r">Payé</th><th class="r">Reste</th><th></th></tr></thead>
-    <tbody>${rows}</tbody>
-    <tfoot><tr class="totrow">
-      <td><span class="tl">Sous-total</span></td>
-      <td class="r" id="sb_${si}">—</td>
-      <td class="r" id="sp_${si}">—</td>
-      <td class="rc" id="sr_${si}">—</td>
-      <td></td>
-    </tr></tfoot>
-  </table>
-  <div class="swipe-hint">← Glissez vers la gauche pour supprimer</div>
-  <div class="addbar"><div class="addbar-row">
-    <button class="btn-add" onclick="addRow(${si},false)">+ Ajouter une ligne</button>
-    <button class="btn-add btn-add-mv" onclick="addRow(${si},true)">− Moins-value</button>
-  </div></div>
-</div>`;
-  return d;
-}
-
-function onBI(el,si,ri){
-  let v=+el.value||0;
-  const row=$('R'+si+'_'+ri);
-  const isMVrow=row&&row.dataset.mv==='1';
-  if(isMVrow&&v>0){v=-v;el.value=v;}
-  const isMV=v<0;
-  el.className='ni'+(isMV?' ni-mv':'');
-  const pi=$('p_'+si+'_'+ri);
-  if(pi){pi.disabled=isMV;pi.style.opacity=isMV?'.3':'1';if(isMV)pi.value=0;}
-  if(row){row.classList.toggle('row-mv',isMV);let b=row.querySelector('.mv-badge');if(isMV&&!b){const lt=row.querySelector('.lt');b=document.createElement('span');b.className='mv-badge';b.textContent='Moins-value';lt.after(b);}if(!isMV&&b)b.remove();}
-  calc();
-}
-
-function tog(si){$('bd'+si).classList.toggle('cl');$('ar'+si).classList.toggle('o');}
-function toggleType(si){syncAll();D.sections[si].type=D.sections[si].type==='enveloppe'?'base':'enveloppe';render();scheduleSave();}
-function addRow(si,mv){syncAll();D.sections[si].rows.push(mv?{l:'Moins-value',n:'',b:-1,p:0,mv:true}:{l:'Nouveau poste',n:'',b:0,p:0});render();setTimeout(()=>{const ri=D.sections[si].rows.length-1;const bi=$('b_'+si+'_'+ri);if(bi){if(mv){bi.value='';}bi.focus();bi.select&&bi.select();}},80);}
-function delRow(si,ri){if(D.sections[si].rows.length<2){toast('Au moins 1 ligne requise.');return;}syncAll();D.sections[si].rows.splice(ri,1);render();scheduleSave();}
-function addSec(){syncAll();D.sections.push({name:'Nouvelle section',type:'enveloppe',rows:[{l:'Nouveau poste',n:'',b:0,p:0}]});render();scheduleSave();}
-function delSec(si){if(!confirm('Supprimer "'+D.sections[si].name+'" ?'))return;syncAll();D.sections.splice(si,1);render();scheduleSave();}
-
-function dl(){syncAll();const tag=$('D'),orig=tag.textContent;tag.textContent=JSON.stringify(D);const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;tag.textContent=orig;try{const blob=new Blob([html],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='index.html';document.body.appendChild(a);a.click();setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);toast('Téléchargé ✓');}catch(e){toast('Erreur : '+e.message);}}
-
-function toast(msg){const el=$('toast');el.textContent=msg;el.style.opacity='1';el.style.transform='translateX(-50%) translateY(0)';setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(-50%) translateY(8px)';},2800);}
-
-// Swipe to delete
-function initSwipe(){
-  document.querySelectorAll('tr.swipe-row').forEach(row=>{
-    if(row._swipeInit)return;row._swipeInit=true;
-    let startX=0,startY=0,dx=0;
-    let overlay=row.querySelector('.swipe-action');
-    if(!overlay){overlay=document.createElement('div');overlay.className='swipe-action';overlay.textContent='Supprimer';overlay.addEventListener('click',e=>{e.stopPropagation();delRow(+row.dataset.si,+row.dataset.ri);});row.style.position='relative';row.appendChild(overlay);}
-    row.addEventListener('touchstart',e=>{document.querySelectorAll('tr.swipe-row.swiped').forEach(r=>{if(r!==row){r.classList.remove('swiped');r.querySelectorAll('td').forEach(td=>td.style.transform='');}});startX=e.touches[0].clientX;startY=e.touches[0].clientY;dx=0;},{passive:true});
-    row.addEventListener('touchmove',e=>{dx=e.touches[0].clientX-startX;const dy=Math.abs(e.touches[0].clientY-startY);if(Math.abs(dx)>dy&&Math.abs(dx)>8){const shift=Math.max(-90,Math.min(0,dx));row.querySelectorAll('td').forEach(td=>td.style.transform=`translateX(${shift}px)`);if(dx<-40)row.classList.add('swiped');else row.classList.remove('swiped');}},{passive:true});
-    row.addEventListener('touchend',()=>{if(dx>-40){row.querySelectorAll('td').forEach(td=>td.style.transform='');row.classList.remove('swiped');}else{row.querySelectorAll('td').forEach(td=>td.style.transform='translateX(-90px)');row.classList.add('swiped');}},{passive:true});
-  });
-}
-document.addEventListener('touchstart',e=>{if(!e.target.closest('tr.swipe-row'))document.querySelectorAll('tr.swipe-row.swiped').forEach(r=>{r.classList.remove('swiped');r.querySelectorAll('td').forEach(td=>td.style.transform='');});},{passive:true});
-
-</script>
-</body>
-</html>
+  startPolling();
+}).catch(()=>{
+  setSyncStatus('error','Hors ligne — données locales');
+  render();
+});
