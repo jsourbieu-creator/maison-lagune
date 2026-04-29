@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -10,382 +9,287 @@
 <title>Suivi Chantier</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
 
-<script id="D" type="application/json">{"title":"Suivi chantier — Maison","pret":299218.06,"sections":[{"name":"Terrain & frais de notaire","rows":[{"l":"Achat du terrain","n":"Acte notaire / compromis","b":44000,"p":44000},{"l":"Frais de notaire","n":"Acte notaire / compromis","b":2200,"p":2200}]},{"name":"Contrat Norelis","rows":[{"l":"Construction clé en main","n":"Carrelage Yosemite 60×60, porte Bel'm Langeais, plancher chauffant, niche TV, coffrage cuisine, poutre cuisine","b":205810.56,"p":154357.92}]},{"name":"Travaux réservés","rows":[{"l":"Raccordements coffrets","n":"Gaines EDF/PTT, eau, eaux usées, accès chantier 130m²","b":9244.07,"p":9244.07},{"l":"Étude géotechnique G2AVP","n":"Document Norelis/Plans","b":1188,"p":1188},{"l":"Raccordement ENEDIS","n":"Document Norelis/Plans","b":426.24,"p":426.24},{"l":"Descentes EP + drainage (plus-value)","n":"Pas encore payé","b":489.72,"p":0}]},{"name":"Frais annexes","rows":[{"l":"Ouverture concessionnaires EAU + PTT","n":"EAU 151 € + PTT 600 €","b":751,"p":751},{"l":"Taxe de raccordement TAE","n":"Document Mairie","b":1300,"p":1300},{"l":"Taxe d'aménagement","n":"Payable en 2× sur 24 mois — pas encore payée","b":3600,"p":0}]},{"name":"Frais bancaires","rows":[{"l":"Frais de garantie (caution bancaire)","n":"CIC — prélevé automatiquement","b":2782.39,"p":2782.39},{"l":"Frais de dossier bancaire","n":"CIC — prélevé automatiquement","b":900,"p":900}]},{"name":"Factures éligibles prêt bancaire","rows":[{"l":"Cuisine équipée + électroménager + buanderie","n":"Four, hotte, réfrigérateur, lave-vaisselle","b":15700,"p":4500},{"l":"Parquet","n":"Payé intégralement","b":1500,"p":1500},{"l":"Peintures","n":"Devis Descrettes — pas encore payées","b":6776.7,"p":0},{"l":"Portail","n":"Pas encore payé","b":8699.6,"p":0}]}]}</script>
+<script id="D" type="application/json">{
+  "pret": 299218.06,
+  "sections": [
+    {"name":"Terrain & frais de notaire","type":"base","rows":[
+      {"l":"Achat du terrain","n":"Acte notaire / compromis","b":44000,"p":44000},
+      {"l":"Frais de notaire","n":"Acte notaire / compromis","b":2200,"p":2200}
+    ]},
+    {"name":"Contrat Norelis","type":"base","rows":[
+      {"l":"Construction clé en main","n":"Carrelage Yosemite 60×60, porte Bel'm, plancher chauffant, niche TV, coffrage cuisine, poutre cuisine","b":205810.56,"p":154357.92}
+    ]},
+    {"name":"Travaux réservés","type":"base","rows":[
+      {"l":"Raccordements coffrets","n":"Gaines EDF/PTT, eau, eaux usées, accès chantier 130m²","b":9244.07,"p":9244.07},
+      {"l":"Étude géotechnique G2AVP","n":"Document Norelis/Plans","b":1188,"p":1188},
+      {"l":"Raccordement ENEDIS","n":"Document Norelis/Plans","b":426.24,"p":426.24},
+      {"l":"Descentes EP + drainage (plus-value)","n":"Pas encore payé","b":489.72,"p":0}
+    ]},
+    {"name":"Frais annexes","type":"base","rows":[
+      {"l":"Ouverture concessionnaires EAU + PTT","n":"EAU 151 € + PTT 600 €","b":751,"p":751},
+      {"l":"Taxe de raccordement TAE","n":"Document Mairie","b":1300,"p":1300},
+      {"l":"Taxe d'aménagement","n":"Payable en 2× sur 24 mois — pas encore payée","b":3600,"p":0}
+    ]},
+    {"name":"Frais bancaires","type":"base","rows":[
+      {"l":"Frais de garantie (caution bancaire)","n":"CIC — prélevé automatiquement","b":2782.39,"p":2782.39},
+      {"l":"Frais de dossier bancaire","n":"CIC — prélevé automatiquement","b":900,"p":900}
+    ]},
+    {"name":"Enveloppe finançable","type":"enveloppe","rows":[
+      {"l":"Cuisine équipée + électroménager + buanderie","n":"Four, hotte, réfrigérateur, lave-vaisselle","b":15700,"p":4500},
+      {"l":"Parquet","n":"Payé intégralement","b":1500,"p":1500},
+      {"l":"Peintures","n":"Devis Descrettes — pas encore payées","b":6776.7,"p":0},
+      {"l":"Portail","n":"Pas encore payé","b":8699.6,"p":0}
+    ]}
+  ]
+}</script>
 
 <style>
-/* ══ Force light mode partout, même en mode nuit iOS ══ */
-html {
-  background: #F5F4F0 !important;
-  color: #1C1B18 !important;
-  color-scheme: light !important;
-}
 @media (prefers-color-scheme: dark) {
-  html, body { background: #F5F4F0 !important; color: #1C1B18 !important; }
-  nav { background: #F0EFE9 !important; }
-  .kc, .sec, .grand-total { background: #FFFFFF !important; }
-  .shdr, .addbar, .totrow td { background: #F5F4F0 !important; }
-  input, .ni { color: #1C1B18 !important; background: transparent; }
-  .ni:focus { background: #fff !important; }
+  html,body{background:#F5F4F0 !important;color:#1C1B18 !important;}
+  nav{background:#EDECEA !important;}
+  .kc,.sec,.recap-box,.analyse-box{background:#FFFFFF !important;}
+  .shdr,.addbar,.totrow td{background:#F5F4F0 !important;}
+  input,.ni{color:#1C1B18 !important;}
+  .ni:focus{background:#fff !important;}
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  color-scheme:light;
+  --bg:#F5F4F0;--white:#FFFFFF;--s2:#F5F4F0;--s3:#ECEAE4;
+  --ink:#1C1B18;--ink2:#6B6960;--ink3:#ABA9A0;
+  --green:#3A6B14;--gnbg:#EBF4DC;
+  --amber:#895408;--ambg:#FDF1D6;
+  --red:#A82C2C;--rdbg:#FAEAEA;
+  --blue:#1655A0;--blbg:#E5F0FC;
+  --purple:#5B3FA6;--purplebg:#EDE8FA;
+  --bd:rgba(28,27,24,.09);--bd2:rgba(28,27,24,.15);
+}
+html{background:var(--bg);-webkit-font-smoothing:antialiased;}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5;padding-bottom:calc(4rem + env(safe-area-inset-bottom));}
 
-*, *::before, *::after {
-  box-sizing: border-box; margin: 0; padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
+/* Nav */
+nav{background:#EDECEA;border-bottom:.5px solid var(--bd2);display:flex;align-items:center;padding:0 16px;padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right));padding-top:env(safe-area-inset-top);min-height:calc(52px + env(safe-area-inset-top));gap:10px;position:sticky;top:0;z-index:100;}
+.nav-title{flex:1;font-size:15px;font-weight:600;letter-spacing:-.015em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.btn{display:inline-flex;align-items:center;gap:5px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;border:none;border-radius:20px;padding:7px 14px;min-height:34px;white-space:nowrap;-webkit-user-select:none;transition:opacity .12s,transform .08s;}
+.btn:active{transform:scale(.96);opacity:.75;}
+.btn-light{background:var(--s3);color:var(--ink2);}
+.btn-dark{background:var(--ink);color:#fff;}
 
-:root {
-  --bg:    #F5F4F0;
-  --white: #FFFFFF;
-  --s2:    #F5F4F0;
-  --s3:    #ECEAE4;
-  --ink:   #1C1B18;
-  --ink2:  #6B6960;
-  --ink3:  #ABA9A0;
-  --green: #3A6B14;
-  --gnbg:  #EBF4DC;
-  --amber: #895408;
-  --ambg:  #FDF1D6;
-  --red:   #A82C2C;
-  --rdbg:  #FAEAEA;
-  --blue:  #1655A0;
-  --blbg:  #E5F0FC;
-  --bd:    rgba(28,27,24,.09);
-  --bd2:   rgba(28,27,24,.15);
-}
+/* Page */
+.page{max-width:860px;margin:0 auto;padding:16px 16px 0;padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right));}
 
-html { -webkit-font-smoothing: antialiased; }
-body {
-  font-family: 'DM Sans', -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--ink);
-  font-size: 15px;
-  line-height: 1.5;
-  padding-bottom: calc(4rem + env(safe-area-inset-bottom));
-}
+/* KPI */
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.kc{background:var(--white);border:.5px solid var(--bd);border-radius:14px;padding:13px 14px;}
+.kc.wide{grid-column:1/-1;}
+.kc.wide .kv{font-size:20px;}
+.kl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:5px;}
+.kv{font-size:16px;font-weight:600;color:var(--ink);letter-spacing:-.02em;line-height:1;}
+.ks{font-size:10px;color:var(--ink3);margin-top:3px;}
+.kc.gn .kv{color:var(--green)}.kc.am .kv{color:var(--amber)}.kc.rd .kv{color:var(--red)}.kc.bl .kv{color:var(--blue)}
 
-/* ── Nav ── */
-nav {
-  background: #F0EFE9;
-  border-bottom: .5px solid var(--bd2);
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  padding-left:  calc(16px + env(safe-area-inset-left));
-  padding-right: calc(16px + env(safe-area-inset-right));
-  padding-top: env(safe-area-inset-top);
-  min-height: calc(52px + env(safe-area-inset-top));
-  gap: 10px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.nav-title {
-  flex: 1;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -.015em;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-  border-radius: 20px;
-  padding: 7px 14px;
-  min-height: 34px;
-  white-space: nowrap;
-  -webkit-user-select: none;
-  transition: opacity .12s, transform .08s;
-}
-.btn:active { transform: scale(.96); opacity: .75; }
-.btn-light { background: var(--s3); color: var(--ink2); }
-.btn-dark  { background: var(--ink); color: #fff; }
+/* Progress */
+.prog-wrap{margin-bottom:16px;}
+.prog-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;}
+.prog-top .pl{font-size:13px;font-weight:500;color:var(--ink2);}
+.prog-top .pv{font-size:13px;font-weight:600;color:var(--green);}
+.prog-bg{height:5px;background:rgba(28,27,24,.1);border-radius:3px;overflow:hidden;margin-bottom:5px;}
+.prog-fill{height:100%;border-radius:3px;background:var(--green);transition:width .7s cubic-bezier(.4,0,.2,1);}
+.prog-sub{font-size:11px;color:var(--ink3);}
 
-/* ── Page ── */
-.page {
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 16px 16px 0;
-  padding-left:  calc(16px + env(safe-area-inset-left));
-  padding-right: calc(16px + env(safe-area-inset-right));
-}
+/* Pret */
+.pret-row{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;padding:13px 15px;background:var(--blbg);border:.5px solid rgba(22,85,160,.13);border-radius:14px;margin-bottom:16px;}
+.pret-row label{font-size:13px;font-weight:500;color:var(--blue);white-space:nowrap;}
+.pret-row input{border:none;background:transparent;font-family:inherit;font-size:16px;font-weight:600;color:var(--blue);flex:1;min-width:100px;outline:none;text-align:right;}
+.pret-row input:focus{outline:1.5px solid var(--blue);border-radius:6px;background:var(--white);padding:2px 6px;text-align:left;}
+.pdelta{width:100%;font-size:11px;font-style:italic;}
+.pdelta.ok{color:var(--green)}.pdelta.warn{color:var(--amber)}
 
-/* ── KPI ── */
-.kpi {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.kc {
-  background: var(--white);
-  border: .5px solid var(--bd);
-  border-radius: 14px;
-  padding: 13px 14px;
-}
-.kl {
-  font-size: 10px; font-weight: 500;
-  text-transform: uppercase; letter-spacing: .07em;
-  color: var(--ink3); margin-bottom: 5px;
-}
-.kv {
-  font-size: 16px; font-weight: 600;
-  color: var(--ink); letter-spacing: -.02em; line-height: 1;
-}
-.ks { font-size: 10px; color: var(--ink3); margin-top: 3px; }
-.kc.gn .kv { color: var(--green) }
-.kc.am .kv { color: var(--amber) }
-.kc.rd .kv { color: var(--red) }
-.kc.bl .kv { color: var(--blue) }
+/* Recap */
+.recap-box{background:var(--white);border:.5px solid var(--bd2);border-radius:16px;overflow:hidden;margin-bottom:16px;}
+.recap-title{padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2);background:var(--s2);border-bottom:.5px solid var(--bd);}
+.recap-grid{display:grid;grid-template-columns:1fr 1fr;}
+.recap-item{padding:14px 16px;border-bottom:.5px solid var(--bd);border-right:.5px solid var(--bd);}
+.recap-item:nth-child(even){border-right:none;}
+.recap-item:nth-last-child(-n+2){border-bottom:none;}
+.rl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:5px;}
+.rv{font-size:17px;font-weight:600;letter-spacing:-.02em;line-height:1;color:var(--ink);}
+.rv.g{color:var(--green)}.rv.a{color:var(--amber)}.rv.rd{color:var(--red)}.rv.p{color:var(--purple)}.rv.bl{color:var(--blue)}
+.rs{font-size:10px;color:var(--ink3);margin-top:3px;}
+.recap-highlight{padding:14px 16px;background:var(--purplebg);border-top:.5px solid rgba(91,63,166,.15);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.rhl{font-size:13px;font-weight:500;color:var(--purple);}
+.rhs{font-size:11px;color:rgba(91,63,166,.6);margin-top:2px;}
+.rhv{font-size:22px;font-weight:700;color:var(--purple);letter-spacing:-.025em;flex-shrink:0;}
 
-/* ── Progress ── */
-.prog-wrap { margin-bottom: 16px; }
-.prog-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; }
-.prog-top .pl { font-size: 13px; font-weight: 500; color: var(--ink2); }
-.prog-top .pv { font-size: 13px; font-weight: 600; color: var(--green); }
-.prog-bg { height: 5px; background: rgba(28,27,24,.1); border-radius: 3px; overflow: hidden; margin-bottom: 5px; }
-.prog-fill { height: 100%; border-radius: 3px; background: var(--green); transition: width .7s cubic-bezier(.4,0,.2,1); }
-.prog-sub { font-size: 11px; color: var(--ink3); }
+/* Section */
+.sec{background:var(--white);border:.5px solid var(--bd);border-radius:16px;margin-bottom:10px;overflow:hidden;}
+.sec.type-enveloppe{border-color:rgba(91,63,166,.2);}
+.shdr{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;-webkit-user-select:none;user-select:none;min-height:52px;}
+.shdr:active{background:var(--s2);}
+.sarr{font-size:9px;color:var(--ink3);transition:transform .2s ease;flex-shrink:0;width:12px;}
+.sarr.o{transform:rotate(90deg);}
+.sname{font-size:14px;font-weight:600;flex:1;min-width:0;letter-spacing:-.015em;color:var(--ink);border-radius:4px;}
+.sname:focus{outline:1.5px solid var(--blue);padding:0 4px;}
+.stype-btn{font-size:10px;font-weight:600;padding:4px 9px;border-radius:20px;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:inherit;transition:opacity .12s;}
+.stype-btn:active{opacity:.7;}
+.stype-base{background:#E8E6E0;color:var(--ink2);}
+.stype-enveloppe{background:var(--purplebg);color:var(--purple);}
+.spill{font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.p-ok{background:var(--gnbg);color:var(--green)}.p-pt{background:var(--ambg);color:var(--amber)}.p-no{background:var(--rdbg);color:var(--red)}.p-au{background:var(--s2);color:var(--ink3)}
+.sdel{opacity:0;transition:opacity .12s;border:none;background:none;color:var(--ink3);cursor:pointer;padding:5px 7px;border-radius:7px;font-size:13px;flex-shrink:0;min-width:30px;min-height:30px;display:flex;align-items:center;justify-content:center;}
+.sdel:hover{background:var(--rdbg);color:var(--red);}
+.shdr:hover .sdel{opacity:1;}
+.sbody{border-top:.5px solid var(--bd);}
+.sbody.cl{display:none;}
 
-/* ── Prêt ── */
-.pret-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 4px 10px;
-  padding: 13px 15px;
-  background: var(--blbg);
-  border: .5px solid rgba(22,85,160,.13);
-  border-radius: 14px;
-  margin-bottom: 16px;
-}
-.pret-row label { font-size: 13px; font-weight: 500; color: var(--blue); white-space: nowrap; }
-.pret-row input {
-  border: none; background: transparent;
-  font-family: inherit; font-size: 16px; font-weight: 600;
-  color: var(--blue); flex: 1; min-width: 100px;
-  outline: none; text-align: right;
-}
-.pret-row input:focus {
-  outline: 1.5px solid var(--blue); border-radius: 6px;
-  background: var(--white); padding: 2px 6px; text-align: left;
-}
-.pdelta { width: 100%; font-size: 11px; font-style: italic; }
-.pdelta.ok { color: var(--green) }
-.pdelta.warn { color: var(--amber) }
+/* Table */
+table{width:100%;border-collapse:collapse;table-layout:fixed;}
+colgroup .col-budget{}
+thead th{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);padding:9px 14px;text-align:left;border-bottom:.5px solid var(--bd);background:var(--s2);white-space:nowrap;}
+thead th.r{text-align:right;}
+tbody td{padding:11px 14px;border-bottom:.5px solid var(--bd);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:active{background:var(--s2);}
+.lt{display:block;font-size:13px;font-weight:500;color:var(--ink);line-height:1.4;border-radius:3px;}
+.lt:focus{outline:1.5px solid var(--blue);padding:0 3px;background:var(--white);}
+.ln{display:block;font-size:11px;color:var(--ink3);margin-top:2px;font-style:italic;line-height:1.3;border-radius:3px;}
+.ln:focus{outline:1px solid rgba(22,85,160,.3);font-style:normal;padding:0 3px;background:var(--white);}
+.ln:empty::before{content:'Note…';color:#ccc;pointer-events:none;}
+.ni{display:block;width:100%;text-align:right;border:.5px solid transparent;border-radius:7px;padding:6px 7px;font-family:inherit;font-size:13px;font-weight:500;background:transparent;color:var(--ink);-webkit-appearance:none;min-height:36px;transition:border-color .1s,background .1s;}
+.ni:hover{border-color:var(--bd2);background:var(--s2);}
+.ni:focus{outline:none;border-color:var(--blue);background:var(--white);}
+.rc{font-size:13px;font-weight:600;text-align:right;padding:11px 14px;vertical-align:middle;white-space:nowrap;}
+.ok{color:var(--green)}.pt{color:var(--amber)}.no{color:var(--red)}
+.totrow td,.totrow .rc{background:var(--s2);font-weight:600;border-top:.5px solid var(--bd2) !important;border-bottom:none !important;padding:11px 14px;vertical-align:middle;}
+.totrow .rc{text-align:right;}
+.tl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);}
+.db{border:none;background:none;color:var(--ink3);font-size:13px;cursor:pointer;padding:4px 6px;border-radius:5px;min-width:30px;min-height:30px;display:flex;align-items:center;justify-content:center;opacity:.2;transition:opacity .1s,background .1s;}
+.db:hover,.db:active{background:var(--rdbg);color:var(--red);opacity:1;}
+@media(hover:hover){.db{opacity:0;}tr:hover .db{opacity:1;}}
+.addbar{padding:10px 14px;border-top:.5px solid var(--bd);background:var(--s2);}
+.btn-add{width:100%;border-radius:10px;min-height:42px;font-size:13px;background:var(--s3);color:var(--ink2);border:none;font-family:inherit;font-weight:500;cursor:pointer;transition:opacity .12s,transform .08s;}
+.btn-add:active{transform:scale(.98);opacity:.8;}
+.btn-add-mv{background:var(--gnbg);color:var(--green);font-weight:600;}
+.btn-add-mv:active{transform:scale(.98);opacity:.8;}
 
-/* ── Section ── */
-.sec {
-  background: var(--white);
-  border: .5px solid var(--bd);
-  border-radius: 16px;
-  margin-bottom: 10px;
-  overflow: hidden;
+/* ── Analyse finale ── */
+.analyse-box{background:var(--white);border:.5px solid var(--bd2);border-radius:16px;overflow:hidden;margin-bottom:12px;}
+.analyse-hdr{padding:14px 20px 12px;border-bottom:.5px solid var(--bd);background:var(--s2);}
+.analyse-hdr h2{font-size:14px;font-weight:600;letter-spacing:-.01em;color:var(--ink);}
+.analyse-hdr p{font-size:11px;color:var(--ink3);margin-top:2px;}
+
+/* Donuts */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:.5px solid var(--bd);}
+.chart-card{padding:20px 16px 16px;display:flex;flex-direction:column;gap:14px;}
+.chart-card:first-child{border-right:.5px solid var(--bd);}
+.chart-inner{display:flex;align-items:center;gap:14px;}
+.donut-wrap{position:relative;width:88px;height:88px;flex-shrink:0;}
+.donut-wrap svg{width:88px;height:88px;}
+.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.donut-pct{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1;}
+.donut-sub{font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+.chart-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);margin-bottom:8px;}
+.leg-row{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.leg-row:last-child{margin-bottom:0;}
+.leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.leg-lbl{font-size:12px;color:var(--ink2);flex:1;}
+.leg-val{font-size:12px;font-weight:600;color:var(--ink);}
+.leg-val.gn{color:var(--green)}.leg-val.am{color:var(--amber)}.leg-val.bl{color:var(--blue)}.leg-val.p{color:var(--purple)}
+.leg-sep{margin-top:6px;padding-top:6px;border-top:.5px solid var(--bd);}
+
+/* Barre prêt */
+.pret-analyse{padding:18px 20px;border-bottom:.5px solid var(--bd);}
+.pa-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);margin-bottom:14px;}
+.pa-bar-wrap{position:relative;height:24px;background:var(--s2);border-radius:8px;overflow:hidden;margin-bottom:12px;}
+.pa-seg{height:100%;position:absolute;top:0;transition:width .6s cubic-bezier(.4,0,.2,1);}
+.pa-seg-base{background:#1655A0;left:0;}
+.pa-seg-env{background:#5B3FA6;}
+.pa-seg-libre{background:#C8E6A0;}
+.pa-seg-over{background:#E8A0A0;}
+.pa-limit{position:absolute;top:0;height:100%;width:2px;background:rgba(0,0,0,.15);z-index:2;}
+.pa-rows{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.pa-row{display:flex;align-items:center;gap:8px;}
+.pa-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+.pa-lbl{font-size:12px;color:var(--ink2);flex:1;}
+.pa-val{font-size:13px;font-weight:600;color:var(--ink);}
+
+/* Résumé final */
+.final-grid{display:grid;grid-template-columns:repeat(4,1fr);}
+.final-item{padding:16px;border-right:.5px solid var(--bd);}
+.final-item:last-child{border-right:none;}
+.fl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:6px;}
+.fv{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.025em;line-height:1;}
+.fv.g{color:var(--green)}.fv.a{color:var(--amber)}.fv.rd{color:var(--red)}.fv.bl{color:var(--blue)}.fv.p{color:var(--purple)}
+.fs{font-size:10px;color:var(--ink3);margin-top:3px;}
+.matelas-banner{padding:16px 20px;background:var(--purplebg);display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.mb-left .mb-title{font-size:13px;font-weight:600;color:var(--purple);}
+.mb-left .mb-sub{font-size:11px;color:rgba(91,63,166,.6);margin-top:2px;}
+.mb-val{font-size:24px;font-weight:700;color:var(--purple);letter-spacing:-.03em;flex-shrink:0;}
+
+
+/* Moins-values */
+.row-mv td { background: #F5FBF0 !important; }
+.ni-mv { color: var(--green) !important; font-weight: 600 !important; }
+.mv-badge { display:inline-block; font-size:9px; font-weight:600; padding:2px 7px; border-radius:10px; background:var(--gnbg); color:var(--green); margin-left:6px; vertical-align:middle; text-transform:uppercase; letter-spacing:.04em; }
+
+/* ── Save bar ── */
+.save-bar{
+  background:var(--white);
+  border:.5px solid var(--bd2);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
 }
-
-.shdr {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  cursor: pointer;
-  -webkit-user-select: none;
-  user-select: none;
-  background: var(--white);
-  min-height: 52px;
+.save-bar-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);}
+.save-bar-row{display:flex;gap:8px;flex-wrap:wrap;}
+.save-bar-row .sbtn{
+  flex:1;
+  min-width:140px;
+  min-height:44px;
+  border-radius:12px;
+  border:none;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:opacity .12s,transform .08s;
+  padding:10px 16px;
 }
-.shdr:active { background: var(--s2); }
-
-.sarr {
-  font-size: 9px; color: var(--ink3);
-  transition: transform .2s ease;
-  flex-shrink: 0; width: 12px;
+.sbtn:active{transform:scale(.97);opacity:.8;}
+.sbtn-save{background:var(--gnbg);color:var(--green);}
+.sbtn-share{background:var(--purplebg);color:var(--purple);}
+.sbtn-dl{background:var(--s3);color:var(--ink2);}
+.save-status{font-size:12px;color:var(--ink3);text-align:center;font-style:italic;min-height:16px;}
+@media(max-width:480px){
+  .save-bar-row .sbtn{min-width:100%;flex:unset;width:100%;}
 }
-.sarr.o { transform: rotate(90deg); }
+.hint{font-size:11px;color:var(--ink3);text-align:center;padding:8px 0 16px;}
 
-.sname {
-  font-size: 14px; font-weight: 600; flex: 1; min-width: 0;
-  letter-spacing: -.015em; color: var(--ink); border-radius: 4px;
-  /* Prevent iOS vertical text bug on contenteditable */
-  word-break: normal; overflow-wrap: anywhere;
-  -webkit-line-clamp: unset;
+/* Responsive */
+@media(max-width:580px){
+  .col-budget{display:none;}
+  .kpi{grid-template-columns:1fr 1fr;}
+  .recap-grid{grid-template-columns:1fr 1fr;}
+  .charts-row{grid-template-columns:1fr;}
+  .chart-card:first-child{border-right:none;border-bottom:.5px solid var(--bd);}
+  .pa-rows{grid-template-columns:1fr;}
+  .final-grid{grid-template-columns:1fr 1fr;}
+  .final-item:nth-child(2){border-right:none;}
+  .final-item:nth-child(3){border-top:.5px solid var(--bd);}
+  .final-item:nth-child(4){border-top:.5px solid var(--bd);border-right:none;}
+  .fv{font-size:16px;}
+  .matelas-banner{flex-direction:column;align-items:flex-start;gap:8px;}
+  .mb-val{font-size:20px;}
 }
-.sname:focus { outline: 1.5px solid var(--blue); padding: 0 4px; }
-
-.spill {
-  font-size: 11px; font-weight: 500;
-  padding: 4px 10px; border-radius: 20px;
-  white-space: nowrap; flex-shrink: 0;
-}
-.p-ok { background: var(--gnbg); color: var(--green) }
-.p-pt { background: var(--ambg); color: var(--amber) }
-.p-no { background: var(--rdbg); color: var(--red) }
-.p-au { background: var(--s2); color: var(--ink3) }
-
-.sdel {
-  opacity: 0; transition: opacity .12s;
-  border: none; background: none; color: var(--ink3);
-  cursor: pointer; padding: 5px 7px; border-radius: 7px;
-  font-size: 13px; flex-shrink: 0;
-  min-width: 30px; min-height: 30px;
-  display: flex; align-items: center; justify-content: center;
-}
-.sdel:hover { background: var(--rdbg); color: var(--red); }
-.shdr:hover .sdel { opacity: 1; }
-
-.sbody { border-top: .5px solid var(--bd); }
-.sbody.cl { display: none; }
-
-/* ── Table ── */
-table { width: 100%; border-collapse: collapse; }
-
-thead th {
-  font-size: 10px; font-weight: 500;
-  text-transform: uppercase; letter-spacing: .07em;
-  color: var(--ink3); padding: 9px 14px;
-  text-align: left; border-bottom: .5px solid var(--bd);
-  background: var(--s2); white-space: nowrap;
-}
-thead th.r { text-align: right; }
-
-tbody td {
-  padding: 11px 14px;
-  border-bottom: .5px solid var(--bd);
-  vertical-align: middle;
-}
-tbody tr:last-child td { border-bottom: none; }
-tbody tr:active { background: var(--s2); }
-
-.lt {
-  display: block; font-size: 13px; font-weight: 500;
-  color: var(--ink); line-height: 1.4; border-radius: 3px;
-}
-.lt:focus { outline: 1.5px solid var(--blue); padding: 0 3px; background: var(--white); }
-
-.ln {
-  display: block; font-size: 11px; color: var(--ink3);
-  margin-top: 2px; font-style: italic; line-height: 1.3; border-radius: 3px;
-}
-.ln:focus { outline: 1px solid rgba(22,85,160,.3); font-style: normal; padding: 0 3px; background: var(--white); }
-.ln:empty::before { content: 'Note…'; color: #ccc; pointer-events: none; }
-
-.ni {
-  display: block; width: 100%; text-align: right;
-  border: .5px solid transparent; border-radius: 7px;
-  padding: 6px 7px; font-family: inherit;
-  font-size: 13px; font-weight: 500; background: transparent;
-  color: var(--ink); -webkit-appearance: none; min-height: 36px;
-  transition: border-color .1s, background .1s;
-}
-.ni:hover { border-color: var(--bd2); background: var(--s2); }
-.ni:focus { outline: none; border-color: var(--blue); background: var(--white); }
-
-.rc {
-  font-size: 13px; font-weight: 600; text-align: right;
-  padding: 11px 14px; vertical-align: middle; white-space: nowrap;
-}
-.ok { color: var(--green) }
-.pt { color: var(--amber) }
-.no { color: var(--red) }
-
-.totrow td, .totrow .rc {
-  background: var(--s2); font-weight: 600;
-  border-top: .5px solid var(--bd2) !important;
-  border-bottom: none !important;
-}
-.tl {
-  font-size: 11px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: .06em; color: var(--ink2);
-}
-
-.db {
-  opacity: 0; transition: opacity .1s;
-  border: none; background: none; color: var(--ink3);
-  font-size: 13px; cursor: pointer;
-  padding: 4px 6px; border-radius: 5px;
-  min-width: 26px; min-height: 26px;
-  display: flex; align-items: center; justify-content: center;
-}
-.db:hover { background: var(--rdbg); color: var(--red); }
-tr:hover .db { opacity: 1; }
-
-.addbar {
-  padding: 10px 14px;
-  border-top: .5px solid var(--bd);
-  background: var(--s2);
-}
-.btn-add {
-  width: 100%; border-radius: 10px;
-  min-height: 42px; font-size: 13px;
-  background: var(--s3); color: var(--ink2);
-  border: none; font-family: inherit; font-weight: 500;
-  cursor: pointer; transition: opacity .12s, transform .08s;
-}
-.btn-add:active { transform: scale(.98); opacity: .8; }
-
-/* ── Grand total ── */
-.grand-total {
-  background: var(--white);
-  border: .5px solid var(--bd2);
-  border-radius: 16px;
-  padding: 18px 16px;
-  margin-bottom: 8px;
-}
-.gt-grid { display: grid; grid-template-columns: repeat(3,1fr); }
-.gt-item { padding-right: 18px; }
-.gt-item + .gt-item { padding: 0 18px; border-left: .5px solid var(--bd); }
-.gt-item:last-child { padding: 0 0 0 18px; }
-.gtl { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: var(--ink3); margin-bottom: 6px; }
-.gtv { font-size: 18px; font-weight: 600; color: var(--ink); letter-spacing: -.025em; line-height: 1; }
-.gtv.g { color: var(--green) }
-.gtv.a { color: var(--amber) }
-.gt-note { margin-top: 14px; padding-top: 12px; border-top: .5px solid var(--bd); font-size: 11px; color: var(--ink3); font-style: italic; line-height: 1.5; }
-
-/* ── Toast ── */
-.toast {
-  position: fixed;
-  bottom: calc(1.25rem + env(safe-area-inset-bottom));
-  left: 50%; transform: translateX(-50%) translateY(8px);
-  background: var(--ink); color: #fff;
-  padding: 10px 20px; border-radius: 20px;
-  font-size: 13px; font-weight: 500;
-  opacity: 0; pointer-events: none;
-  transition: opacity .2s, transform .2s;
-  z-index: 999;
-  box-shadow: 0 4px 20px rgba(0,0,0,.18);
-  white-space: nowrap;
-}
-.toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-.hint { font-size: 11px; color: var(--ink3); text-align: center; padding: 8px 0 16px; }
-
-/* ── Colonnes masquées sur mobile ── */
-@media (max-width: 580px) {
-  /* Cache Budget et colonne suppr sur mobile — table tient en 3 col */
-  .col-budget, .col-del { display: none; }
-  .kpi { grid-template-columns: 1fr 1fr; }
-  .kc.wide { grid-column: 1 / -1; }
-  .kv { font-size: 17px; }
-  nav { gap: 8px; }
-  .gt-grid { grid-template-columns: 1fr; }
-  .gt-item, .gt-item + .gt-item, .gt-item:last-child {
-    padding: 12px 0; border-left: none;
-    border-bottom: .5px solid var(--bd);
-  }
-  .gt-item:last-child { border-bottom: none; }
-  .gtv { font-size: 17px; }
-  .grand-total { padding: 14px 16px; }
+@media(max-width:380px){
+  .spill{display:none;}
+  .stype-btn{font-size:9px;padding:3px 7px;}
 }
 </style>
-
 </head>
 <body>
 
@@ -397,122 +301,431 @@ tr:hover .db { opacity: 1; }
 
 <div class="page">
 
+  <!-- KPI -->
   <div class="kpi">
-    <div class="kc wide"><div class="kl">Budget total</div><div class="kv" id="kt">—</div></div>
+    <div class="kc wide"><div class="kl">Budget total du projet</div><div class="kv" id="kt">—</div></div>
     <div class="kc gn"><div class="kl">Déjà réglé</div><div class="kv" id="kp">—</div></div>
     <div class="kc am"><div class="kl">Reste à payer</div><div class="kv" id="kr">—</div></div>
-    <div class="kc bl"><div class="kl">Enveloppe prêt</div><div class="kv" id="ke">—</div></div>
+    <div class="kc bl"><div class="kl">Prêt accordé</div><div class="kv" id="ke">—</div></div>
     <div class="kc rd"><div class="kl">Fonds propres</div><div class="kv" id="kf">—</div><div class="ks" id="kfs"></div></div>
   </div>
 
+  <!-- Progress -->
   <div class="prog-wrap">
     <div class="prog-top"><span class="pl">Avancement global</span><span class="pv" id="pp">—</span></div>
     <div class="prog-bg"><div class="prog-fill" id="pf" style="width:0%"></div></div>
     <div class="prog-sub" id="ps">—</div>
   </div>
 
+  <!-- Prêt input -->
   <div class="pret-row">
-    <label for="pret">Enveloppe prêt (CIC)</label>
+    <label for="pret">Prêt total accordé (CIC)</label>
     <input id="pret" type="number" step="0.01" inputmode="decimal" oninput="calc()">
     <span class="pdelta" id="pd"></span>
   </div>
 
-  <div id="secs"></div>
-
-  <div class="grand-total">
-    <div class="gt-grid">
-      <div class="gt-item"><div class="gtl">Budget total</div><div class="gtv" id="gb">—</div></div>
-      <div class="gt-item"><div class="gtl">Total payé</div><div class="gtv g" id="gp">—</div></div>
-      <div class="gt-item"><div class="gtl">Reste à payer</div><div class="gtv a" id="gr">—</div></div>
+  <!-- Recap enveloppe -->
+  <div class="recap-box">
+    <div class="recap-title">Récapitulatif — Base & Enveloppe finançable</div>
+    <div class="recap-grid">
+      <div class="recap-item">
+        <div class="rl">Prêt accordé (CIC)</div>
+        <div class="rv bl" id="rc-pret">—</div>
+      </div>
+      <div class="recap-item">
+        <div class="rl">Sections base (engagées)</div>
+        <div class="rv" id="rc-base">—</div>
+        <div class="rs">Terrain, Norelis, travaux, frais…</div>
+      </div>
+      <div class="recap-item">
+        <div class="rl">Reste du prêt pour l'enveloppe</div>
+        <div class="rv p" id="rc-env-dispo">—</div>
+        <div class="rs">Prêt − sections base</div>
+      </div>
+      <div class="recap-item">
+        <div class="rl">Enveloppe planifiée</div>
+        <div class="rv a" id="rc-env-used">—</div>
+        <div class="rs" id="rc-env-used-s">Ce que vous avez budgété</div>
+      </div>
     </div>
-    <div class="gt-note" id="gn"></div>
+    <div class="recap-highlight">
+      <div>
+        <div class="rhl">Matelas disponible dans l'enveloppe</div>
+        <div class="rhs" id="rc-matelas-s">Marge libre avant fonds propres</div>
+      </div>
+      <div class="rhv" id="rc-matelas">—</div>
+    </div>
   </div>
 
-  <p class="hint">Appuyez sur un libellé ou montant pour modifier · Sauvegarde auto</p>
+  <!-- Sections -->
+  <div id="secs"></div>
+
+  <!-- Analyse finale -->
+  <div class="analyse-box">
+    <div class="analyse-hdr">
+      <h2>Analyse financière complète</h2>
+      <p>Vue détaillée de l'avancement et de l'utilisation du prêt</p>
+    </div>
+
+    <!-- Donuts -->
+    <div class="charts-row">
+
+      <!-- Donut avancement -->
+      <div class="chart-card">
+        <div class="chart-inner">
+          <div class="donut-wrap">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#F0EFE9" stroke-width="12"/>
+              <circle id="d1-fill" cx="50" cy="50" r="40" fill="none" stroke="#3A6B14" stroke-width="12"
+                stroke-dasharray="0 251.2" stroke-linecap="round" transform="rotate(-90 50 50)"
+                style="transition:stroke-dasharray .8s cubic-bezier(.4,0,.2,1)"/>
+            </svg>
+            <div class="donut-center">
+              <div class="donut-pct" id="d1-pct">—</div>
+              <div class="donut-sub">payé</div>
+            </div>
+          </div>
+          <div style="flex:1">
+            <div class="chart-title">Avancement paiements</div>
+            <div class="leg-row"><span class="leg-dot" style="background:#3A6B14"></span><span class="leg-lbl">Réglé</span><span class="leg-val gn" id="d1-pay">—</span></div>
+            <div class="leg-row"><span class="leg-dot" style="background:#895408"></span><span class="leg-lbl">À payer</span><span class="leg-val am" id="d1-rem">—</span></div>
+            <div class="leg-row leg-sep"><span class="leg-lbl" style="font-size:11px;color:var(--ink3)">Budget total</span><span class="leg-val" id="d1-tot" style="font-size:11px">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Donut répartition -->
+      <div class="chart-card">
+        <div class="chart-inner">
+          <div class="donut-wrap">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#F0EFE9" stroke-width="12"/>
+              <circle id="d2-base" cx="50" cy="50" r="40" fill="none" stroke="#1655A0" stroke-width="12"
+                stroke-dasharray="0 251.2" stroke-linecap="butt" transform="rotate(-90 50 50)"
+                style="transition:stroke-dasharray .8s,stroke-dashoffset .8s"/>
+              <circle id="d2-env" cx="50" cy="50" r="40" fill="none" stroke="#5B3FA6" stroke-width="12"
+                stroke-dasharray="0 251.2" stroke-linecap="butt" transform="rotate(-90 50 50)"
+                style="transition:stroke-dasharray .8s,stroke-dashoffset .8s"/>
+            </svg>
+            <div class="donut-center">
+              <div class="donut-pct" id="d2-pct" style="font-size:11px;line-height:1.3;color:var(--ink2)">Base<br>/ Env.</div>
+            </div>
+          </div>
+          <div style="flex:1">
+            <div class="chart-title">Répartition budget</div>
+            <div class="leg-row"><span class="leg-dot" style="background:#1655A0"></span><span class="leg-lbl">Sections base</span><span class="leg-val bl" id="d2-base-v">—</span></div>
+            <div class="leg-row"><span class="leg-dot" style="background:#5B3FA6"></span><span class="leg-lbl">Enveloppe</span><span class="leg-val p" id="d2-env-v">—</span></div>
+            <div class="leg-row leg-sep"><span class="leg-lbl" style="font-size:11px;color:var(--ink3)">Total budget</span><span class="leg-val" id="d2-tot" style="font-size:11px">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barre utilisation prêt -->
+    <div class="pret-analyse">
+      <div class="pa-title">Utilisation du prêt — <span id="pa-pret-lbl" style="color:var(--blue);font-weight:700">—</span></div>
+      <div class="pa-bar-wrap">
+        <div class="pa-seg pa-seg-base" id="pa-base" style="width:0%"></div>
+        <div class="pa-seg pa-seg-env" id="pa-env" style="width:0%"></div>
+        <div class="pa-seg pa-seg-libre" id="pa-libre" style="width:0%"></div>
+        <div class="pa-seg pa-seg-over" id="pa-over" style="width:0%;background:#E8A0A0;"></div>
+      </div>
+      <div class="pa-rows">
+        <div class="pa-row"><span class="pa-dot" style="background:#1655A0"></span><span class="pa-lbl">Sections base</span><span class="pa-val" id="pa-base-v">—</span></div>
+        <div class="pa-row"><span class="pa-dot" style="background:#5B3FA6"></span><span class="pa-lbl">Enveloppe planifiée</span><span class="pa-val" id="pa-env-v">—</span></div>
+        <div class="pa-row"><span class="pa-dot" style="background:#C8E6A0"></span><span class="pa-lbl">Libre dans le prêt</span><span class="pa-val" id="pa-libre-v" style="color:var(--green)">—</span></div>
+        <div class="pa-row" id="pa-over-row" style="display:none"><span class="pa-dot" style="background:#E8A0A0"></span><span class="pa-lbl">Hors prêt (fonds propres)</span><span class="pa-val" id="pa-over-v" style="color:var(--red)">—</span></div>
+      </div>
+    </div>
+
+    <!-- Résumé 4 cases -->
+    <div class="final-grid">
+      <div class="final-item"><div class="fl">Budget total</div><div class="fv" id="f-total">—</div><div class="fs">Toutes dépenses</div></div>
+      <div class="final-item"><div class="fl">Déjà payé</div><div class="fv g" id="f-paye">—</div><div class="fs" id="f-paye-s">—</div></div>
+      <div class="final-item"><div class="fl">Reste à payer</div><div class="fv a" id="f-reste">—</div><div class="fs">Dont <span id="f-reste-norelis">—</span> Norelis</div></div>
+      <div class="final-item"><div class="fl">Fonds propres</div><div class="fv rd" id="f-propres">—</div><div class="fs" id="f-propres-s">—</div></div>
+    </div>
+
+    <!-- Matelas banner -->
+    <div class="matelas-banner">
+      <div class="mb-left">
+        <div class="mb-title">Matelas disponible dans l'enveloppe</div>
+        <div class="mb-sub" id="mb-sub">Marge de liberté — retirez ou ajoutez des postes sans fonds propres</div>
+      </div>
+      <div class="mb-val" id="mb-val">—</div>
+    </div>
+
+  </div>
+
+  <!-- Save bar -->
+  <div class="save-bar">
+    <div class="save-bar-title">💾 Sauvegarde & partage</div>
+    <div class="save-bar-row">
+      <button class="sbtn sbtn-save" onclick="saveLocal()">
+        <span>💾</span> Sauvegarder sur cet appareil
+      </button>
+      <button class="sbtn sbtn-share" onclick="shareLink()">
+        <span>🔗</span> Partager le lien
+      </button>
+      <button class="sbtn sbtn-dl" onclick="dl()">
+        <span>⬇</span> Télécharger le fichier
+      </button>
+    </div>
+    <div class="save-status" id="save-status">Dernière sauvegarde : <span id="save-time">—</span></div>
+  </div>
+
+  <p class="hint">Appuyez sur un libellé ou montant pour modifier · Sauvegarde automatique</p>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const KEY='chantier_v10';
+const KEY='chantier_v12';
 let D=JSON.parse(document.getElementById('D').textContent);
 try{const s=localStorage.getItem(KEY);if(s)D=JSON.parse(s);}catch(e){}
 
+const CIRC=251.2; // 2*pi*40
 const fr2=n=>new Intl.NumberFormat('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n)+'\u202f€';
 const fr0=n=>new Intl.NumberFormat('fr-FR').format(Math.round(Math.abs(n)))+'\u202f€';
+const pct0=n=>n.toFixed(1)+'\u202f%';
 const $=id=>document.getElementById(id);
 const txt=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
+function setDash(id,pct){
+  const el=$(id); if(!el) return;
+  const v=Math.max(0,Math.min(1,pct))*CIRC;
+  el.setAttribute('stroke-dasharray',v+' '+CIRC);
+}
+function setDash2(id,pct,offset){
+  const el=$(id); if(!el) return;
+  const v=Math.max(0,Math.min(1,pct))*CIRC;
+  el.setAttribute('stroke-dasharray',v+' '+CIRC);
+  el.setAttribute('stroke-dashoffset',-offset*CIRC);
+}
+
 function calc(){
-  let tB=0,tP=0;
+  let tB=0,tP=0,baseB=0,envB=0;
+  // Track Norelis reste
+  let norelisReste=0;
   D.sections.forEach((s,si)=>{
     let sB=0,sP=0;
     s.rows.forEach((r,ri)=>{
       const bi=$('b_'+si+'_'+ri),pi=$('p_'+si+'_'+ri);
       const b=bi?+bi.value||0:r.b, p=pi?+pi.value||0:r.p;
-      r.b=b;r.p=p;
-      const re=b-p;sB+=b;sP+=p;
+      r.b=b; r.p=p;
+      const re=b-p; sB+=b; sP+=p;
       const rc=$('r_'+si+'_'+ri);
       if(rc){rc.textContent=fr2(re);rc.className='rc '+(re<=0?'ok':p>0?'pt':'no');}
     });
-    tB+=sB;tP+=sP;
+    tB+=sB; tP+=sP;
+    if(s.type==='enveloppe') envB+=sB; else baseB+=sB;
+    if(s.name.toLowerCase().includes('norelis')) norelisReste+=sB-sP;
     const sR=sB-sP;
-    txt('sb_'+si,fr2(sB));txt('sp_'+si,fr2(sP));
+    txt('sb_'+si,fr2(sB)); txt('sp_'+si,fr2(sP));
     const sr=$('sr_'+si);
     if(sr){sr.textContent=fr2(sR);sr.className='rc '+(sR<=0?'ok':sP>0?'pt':'no');}
     const sp=$('spi_'+si);
     if(sp){sp.textContent=sR<=0?'Soldé':sP>0?'Reste '+fr0(sR):'Non payé';sp.className='spill '+(sR<=0?'p-ok':sP>0?'p-pt':'p-no');}
   });
-  const tR=tB-tP,pret=+$('pret').value||0,prop=tB-pret,pct=tB>0?tP/tB*100:0;
-  txt('kt',fr0(tB));txt('kp',fr0(tP));txt('kr',fr0(tR));
-  txt('ke',fr0(pret));txt('kf',fr0(Math.abs(prop)));
-  txt('kfs',prop>0?'hors prêt':'excédent');
-  txt('pp',pct.toFixed(1)+'\u202f%');
-  const pf=$('pf');if(pf)pf.style.width=Math.min(pct,100)+'%';
+
+  const tR=tB-tP;
+  const pret=+$('pret').value||0;
+  const envDispo=pret-baseB;
+  const matelas=envDispo-envB;
+  const propres=Math.max(0,-matelas);
+  const pct=tB>0?tP/tB*100:0;
+
+  // KPI
+  txt('kt',fr0(tB)); txt('kp',fr0(tP)); txt('kr',fr0(tR));
+  txt('ke',fr0(pret)); txt('kf',fr0(propres));
+  txt('kfs',propres>0?'hors prêt':'dans le prêt');
+  txt('pp',pct0(pct));
+  const pf=$('pf'); if(pf)pf.style.width=Math.min(pct,100)+'%';
   txt('ps',fr0(tP)+' réglés sur '+fr0(tB));
   const pd=$('pd');
-  if(pd){pd.textContent=prop>0?'⚠ dépassement de '+fr0(prop)+' sur fonds propres':'✓ prêt suffisant — excédent '+fr0(Math.abs(prop));pd.className='pdelta '+(prop<=0?'ok':'warn');}
-  txt('gb',fr2(tB));txt('gp',fr2(tP));txt('gr',fr2(tR));
-  txt('gn','Enveloppe prêt\u202f: '+fr0(pret)+(prop>0?' · Fonds propres nécessaires\u202f: '+fr0(prop):''));
-  D.pret=pret;save();
+  if(pd){pd.textContent=propres>0?'⚠ dépassement de '+fr0(propres)+' → fonds propres':'✓ tout dans le prêt — excédent de '+fr0(Math.abs(matelas));pd.className='pdelta '+(propres===0?'ok':'warn');}
+
+  // Recap
+  txt('rc-pret',fr0(pret));
+  txt('rc-base',fr0(baseB));
+  const edEl=$('rc-env-dispo');
+  if(edEl){edEl.textContent=fr0(Math.max(0,envDispo));edEl.className='rv '+(envDispo<0?'rd':'p');}
+  const euEl=$('rc-env-used');
+  if(euEl){euEl.textContent=fr0(envB);euEl.className='rv '+(envB>envDispo?'rd':'a');}
+  txt('rc-env-used-s',envB>envDispo?'⚠ Dépasse le prêt !':'Ce que vous avez budgété');
+  const mEl=$('rc-matelas');
+  if(mEl){mEl.textContent=matelas>=0?fr0(matelas):'−'+fr0(Math.abs(matelas));mEl.style.color=matelas>=0?'#5B3FA6':'#A82C2C';}
+  txt('rc-matelas-s',matelas>=0?'Marge libre avant fonds propres':'⚠ Fonds propres nécessaires');
+
+  // Donut 1 — avancement
+  setDash('d1-fill', tB>0?tP/tB:0);
+  txt('d1-pct', pct0(pct));
+  txt('d1-pay', fr0(tP)); txt('d1-rem', fr0(tR)); txt('d1-tot', fr0(tB));
+
+  // Donut 2 — répartition
+  const baseRatio=tB>0?baseB/tB:0;
+  const envRatio=tB>0?envB/tB:0;
+  setDash2('d2-base', baseRatio, 0);
+  setDash2('d2-env', envRatio, baseRatio);
+  txt('d2-pct',''); // on laisse vide, les légendes suffisent
+  txt('d2-base-v', fr0(baseB)); txt('d2-env-v', fr0(envB)); txt('d2-tot', fr0(tB));
+
+  // Barre prêt
+  txt('pa-pret-lbl', fr0(pret));
+  const total4bar=Math.max(pret, baseB+envB);
+  const baseW=total4bar>0?baseB/total4bar*100:0;
+  const envW=total4bar>0?Math.min(envB,envDispo)/total4bar*100:0;
+  const libreW=total4bar>0?Math.max(0,matelas)/total4bar*100:0;
+  const overW=total4bar>0?Math.max(0,-matelas)/total4bar*100:0;
+  const setW=(id,w)=>{const e=$(id);if(e)e.style.width=w.toFixed(1)+'%';};
+  const setL=(id,w)=>{const e=$(id);if(e)e.style.left=w.toFixed(1)+'%';};
+  setW('pa-base',baseW); setL('pa-env',baseW); setW('pa-env',envW);
+  setL('pa-libre',baseW+envW); setW('pa-libre',libreW);
+  setL('pa-over',baseW+envW); setW('pa-over',overW);
+  txt('pa-base-v',fr0(baseB)); txt('pa-env-v',fr0(envB));
+  txt('pa-libre-v',matelas>=0?fr0(matelas):'—');
+  const overRow=$('pa-over-row');
+  if(overRow) overRow.style.display=propres>0?'flex':'none';
+  txt('pa-over-v',fr0(propres));
+
+  // Résumé 4 cases
+  txt('f-total',fr0(tB)); txt('f-paye',fr0(tP));
+  txt('f-paye-s',pct0(pct)+' du budget réglé');
+  txt('f-reste',fr0(tR));
+  txt('f-reste-norelis',fr0(norelisReste));
+  txt('f-propres',propres>0?fr0(propres):'0 €');
+  txt('f-propres-s',propres>0?'Hors enveloppe prêt':'✓ Tout financé par le prêt');
+  const mbEl=$('mb-val');
+  if(mbEl){mbEl.textContent=matelas>=0?fr0(matelas):'−'+fr0(Math.abs(matelas));mbEl.style.color=matelas>=0?'#5B3FA6':'#A82C2C';}
+  txt('mb-sub',matelas>=0
+    ?'Marge libre — vous pouvez réorienter '+fr0(matelas)+' sans fonds propres'
+    :'⚠ Vous dépassez l\'enveloppe de '+fr0(Math.abs(matelas))+' — fonds propres nécessaires');
+
+  D.pret=pret; save();
 }
 
 function save(){try{localStorage.setItem(KEY,JSON.stringify(D));}catch(e){}}
 
+
+function onBI(el,si,ri){
+  const v=+el.value||0;
+  const isMV=v<0;
+  el.className='ni'+(isMV?' ni-mv':'');
+  // disable/enable payé
+  const pi=document.getElementById('p_'+si+'_'+ri);
+  if(pi){pi.disabled=isMV;pi.style.opacity=isMV?'.3':'1';if(isMV)pi.value=0;}
+  // show/hide mv badge
+  const row=document.getElementById('R'+si+'_'+ri);
+  if(row){
+    row.classList.toggle('row-mv',isMV);
+    let badge=row.querySelector('.mv-badge');
+    if(isMV&&!badge){const lt=row.querySelector('.lt');badge=document.createElement('span');badge.className='mv-badge';badge.textContent='Moins-value';lt.after(badge);}
+    if(!isMV&&badge)badge.remove();
+  }
+  calc();
+}
+
+// ── Sauvegarde locale ──
+function saveLocal(){
+  syncBeforeSave();
+  save();
+  const now=new Date();
+  const ts=now.toLocaleDateString('fr-FR')+' à '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  localStorage.setItem(KEY+'_ts',ts);
+  txt('save-time',ts);
+  toast('Sauvegardé sur cet appareil ✓');
+}
+
+function loadSaveTime(){
+  const ts=localStorage.getItem(KEY+'_ts');
+  if(ts) txt('save-time',ts); else txt('save-time','jamais');
+}
+
+// ── Partage par lien ──
+function shareLink(){
+  syncBeforeSave();
+  try{
+    const json=JSON.stringify(D);
+    const b64=btoa(encodeURIComponent(json));
+    const url=location.origin+location.pathname+'#d='+b64;
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(url).then(()=>toast('Lien copié ! Envoyez-le à Agathe 📋'));
+    } else {
+      // Fallback: show in prompt
+      prompt('Copiez ce lien et envoyez-le à Agathe :',url);
+    }
+  }catch(e){toast('Erreur : '+e.message);}
+}
+
+// ── Sync contenteditable fields before save ──
+function syncBeforeSave(){
+  D.sections.forEach((s,si)=>{
+    const sn=document.querySelector('#S'+si+' .sname');
+    if(sn)s.name=sn.textContent.trim();
+    s.rows.forEach((r,ri)=>{
+      const lt=document.querySelector('#R'+si+'_'+ri+' .lt');
+      const ln=document.querySelector('#R'+si+'_'+ri+' .ln');
+      const bi=$('b_'+si+'_'+ri),pi=$('p_'+si+'_'+ri);
+      if(lt)r.l=lt.textContent;if(ln)r.n=ln.textContent;
+      if(bi)r.b=+bi.value||0;if(pi)r.p=+pi.value||0;
+    });
+  });
+  D.pret=+$('pret').value||0;
+}
+
+// ── Load from URL hash if present ──
+function loadFromHash(){
+  try{
+    const hash=location.hash;
+    if(!hash.startsWith('#d=')) return false;
+    const b64=hash.slice(3);
+    const json=decodeURIComponent(atob(b64));
+    const parsed=JSON.parse(json);
+    D=parsed;
+    // clear hash from URL without reload
+    history.replaceState(null,'',location.pathname);
+    toast('Données chargées depuis le lien ✓');
+    return true;
+  }catch(e){ return false; }
+}
+
 function render(){
   $('pret').value=D.pret;
-  const c=$('secs');c.innerHTML='';
+  const c=$('secs'); c.innerHTML='';
   D.sections.forEach((s,si)=>c.appendChild(buildSec(s,si)));
   calc();
 }
 
+function toggleType(si){
+  D.sections[si].type=D.sections[si].type==='enveloppe'?'base':'enveloppe';
+  save(); render();
+}
+
 function buildSec(s,si){
   const d=document.createElement('div');
-  d.className='sec';d.id='S'+si;
+  d.className='sec type-'+(s.type||'base'); d.id='S'+si;
+  const isEnv=(s.type==='enveloppe');
   const rows=s.rows.map((r,ri)=>`<tr id="R${si}_${ri}">
 <td><span class="lt" contenteditable="true" spellcheck="false" onblur="D.sections[${si}].rows[${ri}].l=this.textContent;save()">${esc(r.l)}</span><span class="ln" contenteditable="true" spellcheck="false" onblur="D.sections[${si}].rows[${ri}].n=this.textContent;save()">${esc(r.n)}</span></td>
 <td class="col-budget"><input class="ni" id="b_${si}_${ri}" type="number" step="0.01" min="0" inputmode="decimal" value="${r.b}" oninput="calc()"></td>
 <td><input class="ni" id="p_${si}_${ri}" type="number" step="0.01" min="0" inputmode="decimal" value="${r.p}" oninput="calc()"></td>
 <td class="rc no" id="r_${si}_${ri}">—</td>
-<td class="col-del" style="text-align:center"><button class="db" onclick="delRow(${si},${ri})">✕</button></td>
+<td style="text-align:center;vertical-align:middle"><button class="db" onclick="delRow(${si},${ri})">✕</button></td>
 </tr>`).join('');
-
   d.innerHTML=`
 <div class="shdr" onclick="tog(${si})">
   <span class="sarr o" id="ar${si}">▶</span>
   <span class="sname" contenteditable="true" spellcheck="false" onclick="event.stopPropagation()" onblur="D.sections[${si}].name=this.textContent.trim();save()">${esc(s.name)}</span>
+  <button class="stype-btn ${isEnv?'stype-enveloppe':'stype-base'}" onclick="event.stopPropagation();toggleType(${si})">${isEnv?'Enveloppe':'Base'}</button>
   <span class="spill p-au" id="spi_${si}"></span>
   <button class="sdel" onclick="event.stopPropagation();delSec(${si})">✕</button>
 </div>
 <div class="sbody" id="bd${si}">
   <table>
+    <colgroup><col style="width:42%"><col class="col-budget" style="width:16%"><col style="width:16%"><col style="width:18%"><col style="width:8%"></colgroup>
     <thead><tr>
-      <th>Poste</th>
-      <th class="r col-budget">Budget</th>
-      <th class="r">Payé</th>
-      <th class="r">Reste</th>
-      <th class="col-del"></th>
+      <th>Poste</th><th class="r col-budget">Budget</th><th class="r">Payé</th><th class="r">Reste</th><th></th>
     </tr></thead>
     <tbody>${rows}</tbody>
     <tfoot><tr class="totrow">
@@ -520,18 +733,31 @@ function buildSec(s,si){
       <td class="r col-budget" id="sb_${si}">—</td>
       <td class="r" id="sp_${si}">—</td>
       <td class="rc" id="sr_${si}">—</td>
-      <td class="col-del"></td>
+      <td></td>
     </tr></tfoot>
   </table>
-  <div class="addbar"><button class="btn-add" onclick="addRow(${si})">+ Ajouter une ligne</button></div>
+  <div class="addbar" style="display:flex;gap:8px;">
+    <button class="btn-add" style="flex:1" onclick="addRow(${si},false)">+ Ajouter une ligne</button>
+    <button class="btn-add btn-add-mv" style="flex:1" onclick="addRow(${si},true)">− Moins-value</button>
+  </div>
 </div>`;
   return d;
 }
 
 function tog(si){$('bd'+si).classList.toggle('cl');$('ar'+si).classList.toggle('o');}
-function addRow(si){D.sections[si].rows.push({l:'Nouveau poste',n:'',b:0,p:0});render();}
+function addRow(si,mv){
+  if(mv) D.sections[si].rows.push({l:'Moins-value',n:'',b:-0,p:0,mv:true});
+  else    D.sections[si].rows.push({l:'Nouveau poste',n:'',b:0,p:0});
+  render();
+  // focus the budget field of the new row
+  setTimeout(()=>{
+    const ri=D.sections[si].rows.length-1;
+    const bi=document.getElementById('b_'+si+'_'+ri);
+    if(bi){bi.focus();if(mv){bi.value=-0;}}
+  },80);
+}
 function delRow(si,ri){if(D.sections[si].rows.length<2){toast('Au moins 1 ligne requise.');return;}D.sections[si].rows.splice(ri,1);render();}
-function addSec(){D.sections.push({name:'Nouvelle section',rows:[{l:'Nouveau poste',n:'',b:0,p:0}]});render();}
+function addSec(){D.sections.push({name:'Nouvelle section',type:'enveloppe',rows:[{l:'Nouveau poste',n:'',b:0,p:0}]});render();}
 function delSec(si){if(!confirm('Supprimer "'+D.sections[si].name+'" ?'))return;D.sections.splice(si,1);render();}
 
 function dl(){
@@ -563,13 +789,13 @@ function dl(){
 }
 
 function toast(msg){
-  const el=$('toast');el.textContent=msg;
-  el.classList.add('on');
+  const el=$('toast');el.textContent=msg;el.classList.add('on');
   setTimeout(()=>el.classList.remove('on'),2800);
 }
 
+if(!loadFromHash()){/* keep localStorage data */}
 render();
+loadSaveTime();
 </script>
-
 </body>
 </html>
